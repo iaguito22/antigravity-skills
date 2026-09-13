@@ -1,40 +1,38 @@
 ---
 name: unit-testing
 description: >-
-  Escribe tests unitarios que realmente detecten bugs. Activar cuando el usuario
-  pida escribir tests, "añade tests", "cubre esto con tests", "quiero saber si
-  funciona", o cuando acabe de escribir una función nueva y quiera verificarla.
-  No es para tests de integración ni E2E: es para tests rápidos que fallen si
-  el código está roto.
+  Writes unit tests that actually catch bugs. Activate when the user asks
+  to write tests, "add tests", "cover this", or wants to verify a new function.
+  Not for integration/E2E tests: for fast tests that fail if code is broken.
 ---
 
-# Tests que cazan bugs
+# Unit Tests that Catch Bugs
 
-Un test que no puede fallar no es un test.
+A test that cannot fail is not a test.
 
-## Orden de valor (empieza por el más valioso)
+## Value Order (Start with the most valuable)
 
-1. **Error cases**: entrada inválida, nulo, vacío, negativo, tipo incorrecto → ¿qué lanza/devuelve?
-2. **Límites**: mínimo, máximo, lista de un elemento, primera y última iteración.
-3. **Happy path**: al final. Testear solo lo que funciona no aporta.
+1. **Error cases**: invalid input, null, empty, negative, wrong type → what does it raise/return?
+2. **Boundaries**: min, max, single-element list, first/last iteration.
+3. **Happy path**: do this last. Testing only what works adds zero value.
 
-## Reglas
+## Rules
 
-- Nombre = documentación: `test_remove_missing_raises_keyerror` > `test_remove`.
-- Una aserción por test cuando sea posible.
-- No mockees lo que testeas; solo dependencias externas (BD en `:memory:`, `unittest.mock` para red/tiempo).
-- Fixture mínima: si necesitas BD, `sqlite3.connect(":memory:")`.
+- Name = documentation: `test_remove_missing_raises_keyerror` > `test_remove`.
+- One assertion per test when possible.
+- Do not mock what you are testing; only external dependencies (DB in `:memory:`, `unittest.mock` for network/time).
+- Minimal fixture: if DB is needed, use `sqlite3.connect(":memory:")`.
 
-## Ejecuta una sola vez y reporta
+## Execute ONCE and report
 
 ```sh
-python -m pytest test_archivo.py -v
+python -m pytest test_file.py -v
 ```
 
-Reporta exactamente:
+Report exactly:
 ```
-Tests: N | Pasan: N | Fallan: N
-· test_nombre — qué bug caza o qué caso verifica
+Tests: N | Pass: N | Fail: N
+· test_name — what bug or case it verifies
 ```
 
-Si algo falla inesperadamente: pega el error completo, no lo resumas.
+If something fails unexpectedly: paste the full traceback, do not summarize it.

@@ -1,31 +1,31 @@
 ---
 name: security-audit
 description: >-
-  Búsqueda agresiva de vulnerabilidades y malas prácticas. Activar para auditar
-  seguridad, revisar endpoints, o cuando el código maneje datos sensibles,
-  autenticación, pagos o inputs de usuarios externos.
+  Aggressive search for vulnerabilities and bad practices. Activate to audit
+  security, review endpoints, or when the code handles sensitive data, auth,
+  payments, or external user inputs.
 ---
 
-# Security Audit: Modelo de Amenazas
+# Security Audit: Threat Modeling
 
-Asume que todo input es malicioso. Revisa el código buscando estos vectores:
+Assume all input is malicious. Review the code searching for these vectors:
 
-1. **Inyección**
-   - SQL: ¿Se usa interpolación de strings (`f"{var}"` o `%s` literal) en queries?
-   - Command: ¿El input acaba en `os.system` o `subprocess` sin sanitizar?
-   - Path Traversal: ¿Puede el usuario enviar `../../../etc/passwd` como nombre de archivo?
+1. **Injection**
+   - SQL: Is string interpolation (`f"{var}"` or literal `%s`) used in queries?
+   - Command: Does user input end up in `os.system` or `subprocess` unsanitized?
+   - Path Traversal: Can the user send `../../../etc/passwd` as a filename?
 
-2. **Exposición de Datos**
-   - ¿Se devuelven objetos enteros (`SELECT *`, `user.__dict__`) exponiendo contraseñas o tokens en APIs?
-   - ¿Hay secretos, API keys o contraseñas quemadas (hardcoded) en el código?
-   - ¿Se loguean (print/logger) datos sensibles en texto plano?
+2. **Data Exposure**
+   - Are entire objects (`SELECT *`, `user.__dict__`) returned, exposing passwords or tokens in APIs?
+   - Are secrets, API keys, or passwords hardcoded in the code?
+   - Are sensitive data logged (print/logger) in plain text?
 
-3. **Criptografía y Sesión**
-   - ¿Uso de `MD5` o `SHA1` para contraseñas en vez de bcrypt/argon2?
-   - ¿Se generan tokens de sesión secuenciales o predecibles (`random` básico vs `secrets`)?
+3. **Cryptography & Session**
+   - Using `MD5` or `SHA1` for passwords instead of bcrypt/argon2?
+   - Are session tokens sequential or predictable (`random` vs `secrets`)?
 
-4. **Lógica de Negocio**
-   - IDOR: ¿Si pido `/api/user/5/delete`, se comprueba que YO soy el user 5 o un admin?
-   - Race Conditions: Al gastar saldo, ¿qué pasa si se hacen dos peticiones exactas en el mismo milisegundo?
+4. **Business Logic**
+   - IDOR: If I request `/api/user/5/delete`, is it checked that I AM user 5 or an admin?
+   - Race Conditions: When spending balance, what happens if two exact requests hit the server in the same millisecond?
 
-Si encuentras algo, repórtalo como 🔴 CRÍTICO, indicando cómo explotarlo y cómo mitigarlo.
+If you find anything, report it as 🔴 CRITICAL, indicating how to exploit it and how to mitigate it.

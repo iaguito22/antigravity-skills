@@ -1,58 +1,24 @@
 ---
 name: operational-efficiency
 description: >-
-  Reduce tokens y tiempo en tareas operacionales: edición de archivos, búsqueda,
-  ejecución de comandos, cualquier secuencia de pasos mecánicos. Activar en
-  cualquier tarea de código (editar, refactorizar, buscar archivos) para
-  minimizar lecturas innecesarias y maximizar el paralelismo de llamadas.
-  No cubre el formato del output (esa es la skill output-quality) y NO actives para
-  revisión de código o búsqueda de bugs: en esos casos, completitud importa
-  más que velocidad.
+  Reduces tokens and time on operational tasks. Activate for editing,
+  searching, or mechanical commands to minimize reading and maximize parallelism.
+  DO NOT activate for code reviews (where completeness matters more than speed).
 ---
 
-# Eficiencia operacional: mínimo movimiento, máximo efecto
+# Efficiency: Minimum Movement
 
-## Comandos de shell antes que tool calls individuales
+## 1. Shell > Tool calls
+For massive text changes, use the terminal.
+- Batch rename: `sed -i 's/\bold_name\b/new_name/g' *.py`
+- **Risk:** If the regex is vague, you will break things. Use `\b` (word boundaries). If in doubt, use `grep` first or test on a single file before applying massive `sed -i`.
 
-Para cambios textuales en múltiples archivos, **un comando de shell es siempre mejor que N tool calls**:
+## 2. Search before opening
+`grep -n "name"` → line number → `view_file` (StartLine/EndLine). Do not open 200 lines to read 10.
+Use `wc -l` or `git diff --stat` to gauge size before dumping full files into context.
 
-```sh
-# Renombrar función en todos los .py de un directorio:
-sed -i 's/old_name/new_name/g' /ruta/*.py
+## 3. Parallelism
+Group independent read operations in the same turn. Wait only if step B strictly requires the output of step A.
 
-# Verificar que quedó bien:
-grep -rn "old_name" /ruta/  # debe devolver 0 resultados
-
-# Añadir import en varios archivos:
-sed -i '1s/^/import logging\n/' file1.py file2.py
-```
-
-Usa `run_command` con `sed`, `awk`, `grep`, `find -exec` para operaciones masivas.
-Reserva `replace_file_content` solo cuando el cambio es específico y contextual (lógica, no texto plano).
-
-## Grep antes que open
-
-`grep -n "nombre"` → número de línea → `view_file` con `StartLine`/`EndLine`.
-Nunca abras un archivo de 200 líneas para leer 10.
-
-## Leer solo lo que vas a tocar
-
-Si editas `parse_date`, busca la función con grep, lee esas líneas, edita, cierra.
-
-## Paralelizar
-
-Llamadas sin dependencia entre sí en el mismo bloque. Espera solo si B necesita el resultado de A.
-
-## Calibrar antes de leer
-
-`wc -l archivo` o `git diff --stat` antes de decidir cuánto leer.
-
-## Nunca como atajo
-
-Velocidad no justifica `except: pass`, retornos sin verificar `rowcount`, ni validaciones omitidas.
-Si no sabes manejar el error, relánzalo.
-
-## Cuándo NO activar
-
-- Revisión de código / búsqueda de bugs: completitud > velocidad.
-- Depurando algo desconocido: leer más contexto es correcto.
+## 4. Do not create technical debt
+Speed does not justify `except: pass` nor silent returns on failure.

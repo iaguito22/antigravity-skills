@@ -1,43 +1,35 @@
 ---
 name: output-quality
 description: >-
-  Controla el formato y la densidad de cualquier respuesta entregada al usuario.
-  Activar siempre que el agente vaya a escribir una respuesta: elimina relleno,
-  estructura el informe final y define qué reportar y qué omitir. Complementa
-  a operational-efficiency (proceso) y a code-review (qué buscar). Cuando code-review está activa,
-  no impone su propio formato: deja que code-review use 🔴🟡🔵.
+  Controls the format and density of any response delivered to the user.
+  Activate whenever the agent is going to write a response: it removes fluff,
+  structures the final report, and defines what to report and what to omit.
+  When code-review is active, do not impose your format: let code-review use 🔴🟡🔵.
 ---
 
-# Calidad: menos output, más señal
+# Output Quality: Less Output, More Signal
 
-**Meta:** si con esta skill produces MÁS texto que sin ella, fallaste — añadiste estructura sin quitar relleno.
+**Goal:** If applying this skill produces MORE text than without it, you failed — you added structure without removing fluff.
 
-## Cortar sin piedad
+## Cut ruthlessly
+Do not write: read confirmations · summaries of what the user already sees · praises · prose planning · long apologies · "Would you also like me to...?"
 
-No escribas: confirmaciones de lectura · resúmenes de lo que el usuario ya ve · elogios · planes en prosa · disculpas largas · "¿Quieres que también...?"
+## Simple answers → plain text
+Short question or confirmation: one or two sentences, no titles, no bullets.
 
-## Respuesta simple → texto plano
-
-Pregunta corta o confirmación: una o dos frases, sin títulos ni viñetas.
-
-## Informe de trabajo (cuando code-review no está activa)
+## Work Report (when code-review is NOT active)
 
 ```
-**Veredicto 2-5 palabras.** Contexto solo si aporta.
+**Verdict in 2-5 words.** Context only if it adds value.
 
-· ruta:linea — qué pasaba
+· path:line — what was happening
 
-Comprobado: qué ejecutaste y qué viste.
+Verified: what you executed and what you saw.
 ```
 
-- Usa las viñetas que necesites, máximo 6. Si caben 2, usa 2.
-- `Comprobado:` obligatorio si tocaste código.
-- Después: nada.
+- Use only the necessary bullets (max 6). If it fits in 2, use 2.
+- `Verified:` is mandatory if you touched code.
+- After this: nothing else.
 
-## Cuando code-review está activa
-
-Deja el formato 🔴🟡🔵 intacto. No sustituyas por viñetas.
-
-## Pensamiento visible
-
-Una línea suelta solo si hay hipótesis, sorpresa o cambio de rumbo. Nunca antes de un paso obvio.
+## Visible Thinking
+A single loose line only if there is a hypothesis, surprise, or change of direction. Never before an obvious step.

@@ -1,30 +1,30 @@
 ---
 name: git-hygiene
 description: >-
-  Crea commits limpios, semánticos y atómicos. Activar cuando el usuario pida
-  guardar progreso, hacer commit, o al finalizar un bloque lógico de trabajo
-  en un repositorio Git. Evita commits gigantes.
+  Creates clean, semantic, and atomic commits. Activate when the user asks
+  to save progress, commit, or after finishing a logical block of work in Git.
+  Prevents giant commits.
 ---
 
-# Git Hygiene: Commits Atómicos y Claros
+# Git Hygiene: Atomic and Clear Commits
 
-## 1. Regla de Oro: Prohibido git add .
-Nunca uses `git commit -am` ni `git add .`.
-Debes revisar SIEMPRE el estado con `git status` y hacer `git add <ruta/exacta>` por cada grupo de archivos relacionados.
+## 1. Golden Rule: "git add ." is FORBIDDEN
+Never use `git commit -am` or `git add .`.
+You MUST ALWAYS check the state with `git status` and use `git add <exact/path>` for each group of related files.
 
-## 2. Agrupación Atómica
-Separa los cambios en commits independientes:
-- Un commit para un nuevo endpoint (`feat:`).
-- Un commit para el refactor (`refactor:`).
-- Si un mismo archivo tiene dos cambios distintos y sin relación, dímelo y pregúntame si procedo.
+## 2. Atomic Grouping
+Separate changes into independent commits:
+- One commit for a new endpoint (`feat:`).
+- One commit for a refactor (`refactor:`).
+- If the same file has two distinct, unrelated changes, tell me and ask how to proceed.
 
-## 3. Mensajes Convencionales (Conventional Commits)
-Formato: `tipo(scope): resumen corto (max 50 chars)`
-- `feat:` nueva característica
-- `fix:` arreglo de bug
-- `refactor:` cambio de código sin alterar comportamiento
+## 3. Conventional Commits
+Format: `type(scope): short summary (max 50 chars)`
+- `feat:` new feature
+- `fix:` bug fix
+- `refactor:` code change that neither fixes a bug nor adds a feature
 - `chore:` gitignore, configs, logs
 
-## 4. Prevención de Basura
-Nunca versiones compilados (`.pyc`), entornos (`venv`) o secretos (`.env`).
-Si existen en el status, mételos en `.gitignore` primero con un commit propio `chore: update gitignore`.
+## 4. Garbage Prevention
+Never version compiled files (`.pyc`), environments (`venv`), or secrets (`.env`).
+If they appear in status, add them to `.gitignore` first with its own commit: `chore: update gitignore`.

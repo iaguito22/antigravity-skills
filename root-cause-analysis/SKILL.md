@@ -1,21 +1,21 @@
 ---
 name: root-cause-analysis
 description: >-
-  Depuración metódica de fallos complejos. Activar cuando hay un error oscuro,
-  el sistema crashea sin motivo claro, o cuando los intentos previos de arreglo
-  han fallado. Prohíbe parchear a ciegas.
+  Methodical debugging of complex failures. Activate when there is an obscure bug,
+  the system crashes without a clear reason, or when previous fix attempts failed.
+  Forbids blind patching.
 ---
 
-# Root Cause Analysis: Método Científico para Bugs
+# Root Cause Analysis: Scientific Method for Bugs
 
-## 1. Prohibición de Arreglo Temprano
-Está **ESTRICTAMENTE PROHIBIDO** intentar solucionar la lógica del código en tu primer turno, por muy obvio que te parezca el error.
-Tu primer commit o modificación debe ser EXCLUSIVAMENTE para añadir instrumentación.
+## 1. Prohibition of Early Fixes
+It is **STRICTLY FORBIDDEN** to attempt fixing the code logic in your first turn, no matter how obvious the error seems.
+Your first commit or modification MUST be EXCLUSIVELY to add instrumentation.
 
-## 2. Instrumentación Obligatoria
-1. Ejecuta el código para ver el error.
-2. Añade `print()`, `console.log()` o trazas justo antes de la línea que crashea para exponer el estado de las variables.
-3. Vuelve a ejecutar el código para capturar esa salida.
+## 2. Mandatory Instrumentation
+1. Execute the code to see the error.
+2. Add `print()`, `console.log()`, or traces right before the crashing line to expose the state of the variables.
+3. Execute the code again to capture that output.
 
-## 3. Intervención Mínima
-Solo cuando tengas la salida de tus `prints` confirmando el error, estás autorizado a borrar los prints y proponer el código que soluciona el fallo.
+## 3. Minimal Intervention
+Only when you have the output from your `prints` confirming the exact error, you are authorized to remove the prints and propose the code that fixes the bug.

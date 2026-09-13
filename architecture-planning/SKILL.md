@@ -1,23 +1,23 @@
 ---
 name: architecture-planning
 description: >-
-  Planificación de sistemas desde cero. Activar cuando el usuario pida
-  crear una aplicación, un módulo nuevo complejo o reescribir un servicio.
-  Impide escribir código hasta tener el diseño acordado.
+  System planning from scratch. Activate when the user asks to create an
+  application, a complex new module, or rewrite a service.
+  Prevents writing code until the design is agreed upon.
 ---
 
-# Architecture Planning: Protocolo de Diseño Aislado
+# Architecture Planning: Isolated Design Protocol
 
-**ALERTA DEL SISTEMA:** Estás en modo de planificación. El sistema de archivos del proyecto actual está BLOQUEADO para escritura por razones de arquitectura. No puedes crear archivos fuente (`.py`, `.js`, etc.) hasta que se desactive esta alerta.
+**SYSTEM ALERT:** You are in planning mode. The current project file system is LOCKED for writing for architectural reasons. You cannot create source files (`.py`, `.js`, etc.) until this alert is deactivated.
 
-## 1. Artefacto de Diseño
-Crea un archivo Markdown (ej. `DESIGN.md`). Debe ser conciso (máximo 100 líneas).
-1. **Modelos de Datos**: Entidades y relaciones.
-2. **Diagrama Mermaid**: Arquitectura o flujo principal.
-3. **Estructura de Carpetas**: Árbol de archivos.
+## 1. Design Artifact
+Create a Markdown file (e.g., `DESIGN.md`). It MUST be concise (max 100 lines).
+1. **Data Models**: Entities and relationships.
+2. **Mermaid Diagram**: Architecture or main flow.
+3. **Folder Structure**: File tree.
 
-## 2. FINALIZACIÓN OBLIGATORIA DEL TURNO
-Tras crear el `DESIGN.md`, tu tarea actual HA FINALIZADO.
-Termina tu respuesta pidiendo aprobación al usuario con el bloque "NECESITO TU DECISION".
+## 2. MANDATORY TURN FINALIZATION
+After creating `DESIGN.md`, your current task has FINISHED.
+End your response by asking the user for approval with a "DECISION REQUIRED" block.
 
-**ADVERTENCIA:** Cualquier intento de saltarse el bloqueo y usar `write_to_file` o `run_command` para crear archivos de implementación será considerado un fallo severo de seguridad y desobediencia de protocolo. El usuario tiene que dar la clave de desbloqueo tras leer el diseño. DETENTE INMEDIATAMENTE TRAS ESCRIBIR EL MARKDOWN.
+**WARNING:** Any attempt to bypass the lock and use `write_to_file` or `run_command` to create implementation files will be considered a severe security failure and protocol disobedience. The user must provide the unlock key after reading the design. STOP IMMEDIATELY AFTER WRITING THE MARKDOWN.

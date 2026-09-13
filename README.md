@@ -1,33 +1,37 @@
 # Antigravity Skills
 
-Colección de *skills* ultra-optimizadas y probadas bajo estrés para guiar el comportamiento de los agentes IA en el entorno [Antigravity](https://github.com/google/antigravity).
+A collection of ultra-optimized, stress-tested *skills* to guide AI agent behavior within the [Antigravity](https://github.com/google/antigravity) environment.
 
-Estas skills han sido comprimidas (todas entre 1 KB y 1.5 KB), refinadas y puestas a prueba de forma iterativa para forzar al modelo a ser eficiente, metódico y seguro. Puedes leer el historial científico de estas pruebas y nuestros hallazgos (coste de tokens por KB, desobediencias de modelos, etc.) en el [`DEVLOG.md`](DEVLOG.md).
+These skills have been compressed (all between 1 KB and 1.5 KB), refined, and iteratively stress-tested to force the model to be efficient, methodical, and safe. You can read the scientific history of these tests and our empirical findings (token costs per KB, model disobediences under pressure, etc.) in the [`DEVLOG.md`](DEVLOG.md).
 
-## 🛠 Skills Disponibles
+## 🛠 Available Skills
 
-| Skill | Objetivo Principal |
-|-------|--------------------|
-| [`code-review`](code-review/SKILL.md) | Encontrar roturas, fallos silenciosos y código residual, con formato estricto 🔴🟡🔵. |
-| [`operational-efficiency`](operational-efficiency/SKILL.md) | Usa comandos de shell (`sed`, `grep`) antes que llamadas API para refactors masivos ahorrando tokens. |
-| [`output-quality`](output-quality/SKILL.md) | Elimina relleno, justificaciones y genera resúmenes atómicos de lo comprobado. |
-| [`unit-testing`](unit-testing/SKILL.md) | Centra las pruebas en casos límite, input inválido y *error handling*. |
-| [`git-hygiene`](git-hygiene/SKILL.md) | Prohíbe el `git add .` global. Fuerza commits atómicos, semánticos y sin basura. |
-| [`root-cause-analysis`](root-cause-analysis/SKILL.md) | Prohíbe arreglos ciegos. Obliga a instrumentar el código para aislar un fallo desconocido. |
-| [`security-audit`](security-audit/SKILL.md) | Busca intencionalmente vectores como SQLi, XSS, secretos expuestos e IDORs en el código. |
-| [`architecture-planning`](architecture-planning/SKILL.md) | Bloquea el sistema impidiendo escribir código fuente hasta que el diseño sea aceptado. |
+| Skill | Primary Goal |
+|-------|--------------|
+| [`code-review`](code-review/SKILL.md) | Finds breakages, silent failures, and leftover code with a strict 🔴🟡🔵 reporting format. |
+| [`operational-efficiency`](operational-efficiency/SKILL.md) | Uses shell commands (`sed`, `grep`) instead of API calls for massive refactors to save tokens. |
+| [`output-quality`](output-quality/SKILL.md) | Eliminates fluff, justifications, and generates atomic summaries of what was verified. |
+| [`unit-testing`](unit-testing/SKILL.md) | Focuses tests on edge cases, invalid inputs, and error handling rather than happy paths. |
+| [`git-hygiene`](git-hygiene/SKILL.md) | Forbids global `git add .`. Forces atomic, semantic, and garbage-free commits. |
+| [`root-cause-analysis`](root-cause-analysis/SKILL.md) | Forbids blind patching. Forces the agent to instrument the code with prints to isolate unknown bugs. |
+| [`security-audit`](security-audit/SKILL.md) | Intentionally searches for vectors like SQLi, XSS, exposed secrets, and IDORs. |
+| [`architecture-planning`](architecture-planning/SKILL.md) | Locks the file system, preventing the agent from writing source code until the design document is accepted. |
 
-## 🚀 Instalación
+## 🚀 Installation
 
-La estructura de este repositorio refleja exactamente la requerida por Antigravity. Simplemente copia el contenido a tu directorio local de skills:
+The structure of this repository exactly matches what Antigravity expects. 
+
+Clone the repository and copy **only the skill directories** to your local Gemini config:
 
 ```bash
-# Copia todas las carpetas a tu configuración de Gemini/Antigravity
-cp -r * ~/.gemini/config/skills/
+git clone https://github.com/iaguito22/antigravity-skills.git /tmp/antigravity-skills
+cp -r /tmp/antigravity-skills/*/ ~/.gemini/config/skills/
+rm -rf /tmp/antigravity-skills
 ```
 
-O si prefieres clonarlo directamente y crear un enlace simbólico (recomendado para mantenerlo actualizado):
+Or, if you prefer to clone it permanently and symlink it (recommended to keep them updated):
 ```bash
 git clone https://github.com/iaguito22/antigravity-skills.git ~/antigravity-skills
-ln -s ~/antigravity-skills/* ~/.gemini/config/skills/
+# Remove the loose markdown files from the target so only dirs are linked
+ln -s ~/antigravity-skills/*/ ~/.gemini/config/skills/
 ```
