@@ -5,6 +5,12 @@ A collection of ultra-optimized, stress-tested *skills* to guide AI agent behavi
 These skills have been compressed (all between 1 KB and 1.5 KB), refined, and iteratively stress-tested to force the model to be efficient, methodical, and safe. You can read the scientific history of these tests and our empirical findings (token costs per KB, model disobediences under pressure, etc.) in the [`DEVLOG.md`](DEVLOG.md).
 
 ## 🛠 Available Skills
+| [`ui-design-standards`](ui-design-standards/SKILL.md) | Prevents the "cheap AI look". Forces modern typography and forbids giant shadows and generic blocks. |
+| [`ui-animation`](ui-animation/SKILL.md) | Enforces 60fps animations. Forbids animating layout properties like width/margin, forcing GPU-accelerated transforms. |
+| [`web-3d`](web-3d/SKILL.md) | Fixes plastic-looking WebGL scenes. Enforces ACESFilmic, SRGB, and casting/receiving shadows in Three.js and R3F. |
+| [`modern-css`](modern-css/SKILL.md) | Forbids legacy CSS (floats, negative margins, 100vh). Enforces `gap`, `dvh`, `:has()`, and Container Queries. |
+| [`react-hygiene`](react-hygiene/SKILL.md) | Prohibits deriving state with `useEffect` (the most common AI React anti-pattern) and enforces clean rendering. |
+| [`web-accessibility`](web-accessibility/SKILL.md) | Forces WCAG contrast, Focus Traps, keyboard outline states, and semantic native elements. |
 
 | Skill | Primary Goal |
 |-------|--------------|
