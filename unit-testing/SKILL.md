@@ -1,38 +1,32 @@
 ---
 name: unit-testing
 description: >-
-  Writes unit tests that actually catch bugs. Activate when the user asks
-  to write tests, "add tests", "cover this", or wants to verify a new function.
-  Not for integration/E2E tests: for fast tests that fail if code is broken.
+  Use when asked to write tests: "add tests", "write tests", "cover this", "test X"
+  (also "añade tests", "haz tests"), or to verify a new function. Fast unit tests that
+  fail when the code is broken.
 ---
 
-# Unit Tests that Catch Bugs
+# Tests that catch bugs
 
-A test that cannot fail is not a test.
+A test that can't fail is not a test.
 
-## Value Order (Start with the most valuable)
-
-1. **Error cases**: invalid input, null, empty, negative, wrong type → what does it raise/return?
-2. **Boundaries**: min, max, single-element list, first/last iteration.
-3. **Happy path**: do this last. Testing only what works adds zero value.
+## Order (most to least valuable)
+1. **Errors**: invalid input, `None`, empty, negative, wrong type → what it raises/returns.
+2. **Limits**: minimum, maximum, a single element, first/last iteration.
+3. **Happy path**, last.
 
 ## Rules
+- The name is the documentation: `test_remove_missing_raises_valueerror`, not `test_remove`.
+- Mocks only for external things (network, time, disk). DB: `sqlite3.connect(":memory:")`.
+- A test that fails because of a real bug in the code: **don't touch the code or the test**,
+  report it.
 
-- Name = documentation: `test_remove_missing_raises_keyerror` > `test_remove`.
-- One assertion per test when possible.
-- Do not mock what you are testing; only external dependencies (DB in `:memory:`, `unittest.mock` for network/time).
-- Minimal fixture: if DB is needed, use `sqlite3.connect(":memory:")`.
+## Run once
+`python3 -m pytest -q <file>`; if pytest isn't installed, `python3 -m unittest -v <file>`.
+JS: whatever runner the project already uses (`package.json`).
 
-## Execute ONCE and report
-
-```sh
-python -m pytest test_file.py -v
-```
-
-Report exactly:
 ```
 Tests: N | Pass: N | Fail: N
-· test_name — what bug or case it verifies
+· test_name — which case it covers
 ```
-
-If something fails unexpectedly: paste the full traceback, do not summarize it.
+If something fails: paste the whole traceback.

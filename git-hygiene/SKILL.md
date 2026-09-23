@@ -1,30 +1,22 @@
 ---
 name: git-hygiene
 description: >-
-  Creates clean, semantic, and atomic commits. Activate when the user asks
-  to save progress, commit, or after finishing a logical block of work in Git.
-  Prevents giant commits.
+  Use for "commit", "commit this", "save the changes", "push this" (also "haz commit",
+  "guarda los cambios"), or after finishing a logical block of work in a Git repo.
+  Clean, atomic, conventional commits.
 ---
 
-# Git Hygiene: Atomic and Clear Commits
+# Clean commits
 
-## 1. Golden Rule: "git add ." is FORBIDDEN
-Never use `git commit -am` or `git add .`.
-You MUST ALWAYS check the state with `git status` and use `git add <exact/path>` for each group of related files.
+1. **`git status` and `git diff --stat` in a single call.** Never `git add .` or `commit -am`:
+   `git add <path>` per group.
+2. **One commit per logical change**: a new feature (`feat:`), a fix (`fix:`), a cleanup
+   (`refactor:`), config (`chore:`). One file with two unrelated changes → ask.
+3. **Format**: `type(scope): summary` in ≤ 50 characters, in the repo's language
+   (check `git log --oneline -5`).
+4. **Junk**: `.pyc`, `__pycache__`, `venv`, `node_modules`, `.env` → into `.gitignore` in its
+   own commit (`chore: update gitignore`). If there's an unversioned secrets file
+   (`.env`, keys), mention it in the report.
+5. **No push** unless asked.
 
-## 2. Atomic Grouping
-Separate changes into independent commits:
-- One commit for a new endpoint (`feat:`).
-- One commit for a refactor (`refactor:`).
-- If the same file has two distinct, unrelated changes, tell me and ask how to proceed.
-
-## 3. Conventional Commits
-Format: `type(scope): short summary (max 50 chars)`
-- `feat:` new feature
-- `fix:` bug fix
-- `refactor:` code change that neither fixes a bug nor adds a feature
-- `chore:` gitignore, configs, logs
-
-## 4. Garbage Prevention
-Never version compiled files (`.pyc`), environments (`venv`), or secrets (`.env`).
-If they appear in status, add them to `.gitignore` first with its own commit: `chore: update gitignore`.
+Report: the commits (`git log --oneline -N`) and the final `git status`.

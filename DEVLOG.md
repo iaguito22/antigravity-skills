@@ -15,3 +15,16 @@ This document tracks the iterative development, testing, and token-cost analysis
 - **Git Hygiene:** Ignored generic instructions to separate commits. It required an absolute ban on `git add .` to force the agent to use `git status` and create atomic, semantic commits based on feature/refactor scopes.
 - **Root Cause Analysis:** Gemini is often smart enough to spot simple type errors (like `len(int)`) by just reading the code, allowing it to fix the issue instantly and ignore the skill's order to "debug first". We had to impose an absolute prohibition on first-turn fixes to force the scientific method (adding `print()` to isolate state).
 - **Code Review:** Started as a massive 4.2 KB skill. We aggressively compressed it down to 1.3 KB without losing its ability to catch silenced exceptions, missing database rowcount verifications, and logical bugs.
+
+## 2026-09-23 — Rework: 14 skills → 6
+
+Benchmarked 11 real tasks with and without the skills (Gemini 3.7 Flash Low, Antigravity CLI 1.2.8).
+
+- **Most skills never fired.** Only 3-5 of 10 tasks loaded any skill; the four web skills never did. Skills trigger **only through their `description`**, so every description now lists the user's actual words (English and Spanish). Result: 9/9 correct activations, no false ones.
+- **Only the description is paid every turn** (~1.2k input tokens for the whole list); the body is paid once, when the agent opens it. So a focused 6 KB skill that fires beats three 1.5 KB ones that don't.
+- **Merged or removed:** `security-audit` → `code-review`; `ui-design-standards` + `modern-css` + `web-accessibility` + `ui-animation` → `web-frontend`; `architecture-planning`, `root-cause-analysis`, `output-quality` and `operational-efficiency` removed (they never fired, or repeated the global rules file).
+- **Rules alone don't stop AI-looking pages.** With a banned-phrases list the model still wrote "unhurried" and "honest", invented "12 bikes in progress" and pasted a green "open now" dot. A deterministic linter (`revisa.py`) run in the check step took three landings from 6-9 warnings each to 0.
+- **The 2026 AI template** is no longer the purple gradient: it's cream background + high-contrast serif + split hero with a beige info card. It is now explicitly banned.
+- **What Dribbble does that AI doesn't:** the image leads. Adding one `generate_image` hero plus a die for style/hero/signature/typefaces made three briefs look distinct and designed. Cost: ~110-150 s and ~12k output tokens per landing, versus ~60 s without images.
+- **Model choice:** Gemini 3.8 Flash Low was 1.5-4x slower than 3.7 Flash Low on the same 11 tasks with the same quality, and leaked reasoning into answers.
+

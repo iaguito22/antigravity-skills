@@ -7,37 +7,27 @@
 ## ❓ Why use these skills?
 Large Language Models (LLMs) have bad habits. They love to write legacy CSS, abuse `useEffect` in React, create massive unreadable Git commits, and blindly patch bugs without instrumenting them first. 
 
-These skills act as **mechanical stops and guardrails**. They have been heavily compressed (all under 1.5 KB), refined, and iteratively stress-tested to force the AI to be efficient, methodical, and safe. 
+These skills act as **mechanical stops and guardrails**. They have been kept compact, refined, and iteratively stress-tested against the same tasks with and without them to force the AI to be efficient, methodical, and safe. 
 
 > 🔬 **Empirical Research:** You can read the scientific history of our stress tests, token costs, and how we solved "LLM disobedience" in the [`DEVLOG.md`](DEVLOG.md).
 
 ## 🛠 Available Skills
 
-### 🧠 Core Workflow & Architecture
-| Skill | Primary Goal |
-|-------|--------------|
-| [`architecture-planning`](architecture-planning/SKILL.md) | **Locks the file system**. Prevents the agent from writing source code until a `DESIGN.md` is approved. |
-| [`operational-efficiency`](operational-efficiency/SKILL.md) | Forces the use of shell commands (`sed`, `grep`) instead of heavy API calls for massive refactors. |
-| [`output-quality`](output-quality/SKILL.md) | Eliminates AI fluff and justifications. Forces atomic, bullet-point summaries of verified work. |
-
 ### 🛡️ Backend & DevOps
 | Skill | Primary Goal |
 |-------|--------------|
-| [`code-review`](code-review/SKILL.md) | Hunts for real breakages, silent failures (`except: pass`), and leftover code using a strict 🔴🟡🔵 format. |
-| [`root-cause-analysis`](root-cause-analysis/SKILL.md) | **Forbids blind patching.** Forces the agent to instrument code with `print()` to isolate bugs before fixing. |
-| [`git-hygiene`](git-hygiene/SKILL.md) | **Forbids `git add .`**. Forces atomic, semantic, and garbage-free commits based on `git status`. |
-| [`security-audit`](security-audit/SKILL.md) | Intentionally searches for vulnerabilities like SQLi, XSS, exposed secrets, and IDORs. |
-| [`unit-testing`](unit-testing/SKILL.md) | Focuses tests entirely on edge cases, invalid inputs, and error handling rather than happy paths. |
+| [`code-review`](code-review/SKILL.md) | Hunts real breakages, silent failures (`except: pass`) and security holes (SQLi, path traversal, secrets, IDOR). **Runs the suspicious code** before judging instead of just reading it. |
+| [`git-hygiene`](git-hygiene/SKILL.md) | **Forbids `git add .`**. Atomic, conventional commits in the repo's language; flags unversioned `.env` files; never pushes unasked. |
+| [`unit-testing`](unit-testing/SKILL.md) | Errors and limits first, happy path last. If a test exposes a real bug, it reports it instead of "fixing" the test. |
 
 ### 🎨 Frontend & UI/UX
 | Skill | Primary Goal |
 |-------|--------------|
-| [`ui-design-standards`](ui-design-standards/SKILL.md) | Prevents the "cheap AI look". Forces modern typography and forbids giant shadows and generic blocks. |
-| [`ui-animation`](ui-animation/SKILL.md) | Enforces 60fps animations. Forbids animating layout properties (width/margin), forcing GPU `transform`. |
-| [`modern-css`](modern-css/SKILL.md) | Forbids legacy CSS (floats, negative margins, 100vh). Enforces `gap`, `100dvh`, `:has()`, and Container Queries. |
-| [`react-hygiene`](react-hygiene/SKILL.md) | **Prohibits deriving state with `useEffect`** (the most common AI React anti-pattern) and enforces clean rendering. |
-| [`web-accessibility`](web-accessibility/SKILL.md) | Forces WCAG contrast, Focus Traps, keyboard outline states, and semantic native elements. |
-| [`web-3d`](web-3d/SKILL.md) | Fixes plastic-looking WebGL scenes. Enforces ACESFilmic, SRGB, and shadows in Three.js and R3F. |
+| [`web-frontend`](web-frontend/SKILL.md) | **Art direction so pages don't look AI-made.** A die picks style, hero, signature and typefaces; `generate_image` supplies a real hero image; a linter (`revisa.py`) catches stock phrases, default fonts, fake "live" data and bloat. Also modern CSS and accessibility. |
+| [`react-hygiene`](react-hygiene/SKILL.md) | **Prohibits deriving state with `useEffect`** (the most common AI React anti-pattern), stable keys, no gratuitous memoization. |
+| [`web-3d`](web-3d/SKILL.md) | Fixes plastic-looking WebGL scenes: ACESFilmic, sRGB, shadow-camera framing and fill light in Three.js and R3F. |
+
+Visual checks use `agy-ver` from [a-gemini-more-like-claude](https://github.com/iaguito22/a-gemini-more-like-claude).
 
 *(Note: The `prototypes` skill is maintained in its own repository: [ai-prototypes](https://github.com/iaguito22/ai-prototypes)).*
 

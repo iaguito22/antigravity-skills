@@ -1,35 +1,34 @@
 ---
 name: web-3d
 description: >-
-  3D scenes in the browser (Three.js, WebGL, React Three Fiber) that look
-  realistic and not like plastic. Use when dealing with 3D, models, cameras,
-  materials, lights, shaders.
+  Use for any 3D in the browser: 3D scene, three.js, WebGL, React Three Fiber, model,
+  camera, lights, shadows, materials, shaders (also "escena 3D"). Makes scenes look
+  right, not like plastic.
 ---
 
 # 3D that doesn't look like plastic
 
-90% of bad scenes fail because of the same thing: render configuration, flat lighting, and invented scale.
-
-## 1. Vanilla Three.js: The 4 sacred settings
-Without this, any scene looks matte and washed out. ALWAYS include in Vanilla JS:
-
+## 1. Renderer (vanilla three.js)
 ```js
-renderer.outputColorSpace = THREE.SRGBColorSpace;
-renderer.toneMapping = THREE.ACESFilmicToneMapping;
-renderer.toneMappingExposure = 1.0;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;   // not on by default
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2)); // never bare devicePixelRatio
 ```
+Color textures: `tex.colorSpace = THREE.SRGBColorSpace` (normal/roughness maps: no).
+Resize: update `camera.aspect`, `updateProjectionMatrix()` and `renderer.setSize`.
 
-## 2. React Three Fiber (R3F)
-In R3F **DO NOT modify the renderer imperatively**.
-The `<Canvas>` already applies SRGB and ACESFilmic by default.
-Just explicitly enable shadows: `<Canvas shadows dpr={[1, 2]}>`
+## 2. React Three Fiber
+Don't touch the renderer by hand: `<Canvas shadows dpr={[1, 2]}>` already applies sRGB and ACES.
 
-## 3. The Shadow Trap
-Enabling `shadowMap` is NOT enough. The AI always forgets the rest.
-For shadows to exist, you MUST add:
-1. A light that casts: `light.castShadow = true`
-2. Objects that cast: `mesh.castShadow = true`
-3. Objects that receive: `mesh.receiveShadow = true`
+## 3. Shadows: the four pieces
+1. `light.castShadow = true` 2. `mesh.castShadow = true` 3. `floor.receiveShadow = true`
+4. Shadow camera framing: by default it covers ±5 units. Fit
+   `light.shadow.camera.left/right/top/bottom` to the floor and `light.shadow.mapSize.set(2048, 2048)`,
+   or the shadow comes out clipped or pixelated.
+
+## 4. Light
+Never just `AmbientLight`: a main directional light + a soft `HemisphereLight` fill.
+
+## 5. Check
+`agy-ver abrir` → `foto` (is the shadow on the floor?) → `mide 3` (FPS) → `logs` → `cerrar`.

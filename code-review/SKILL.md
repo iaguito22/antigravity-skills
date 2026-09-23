@@ -1,35 +1,38 @@
 ---
 name: code-review
 description: >-
-  Reviews code looking for real bugs before committing. Activate to review
-  changes, find errors, or evaluate pull requests. Does not evaluate style:
-  searches for logical flaws, silenced errors, and leftover debugging code.
+  Use to review code for real bugs and security holes: "review this", "take a look",
+  "before I commit", "going to production", "is this OK?", PRs, diffs (also "revisa",
+  "echa un ojo", "antes de commitear"). Logic errors, silenced errors, injections,
+  leftovers. Not style.
 ---
 
-# Code Review: Find Real Breakages
+# Review: real bugs, not style
 
-## 1. Context and Execution
-- If the user reports a bug, **reproduce it** before reading code.
-- Reading is not testing. **Execute** the function or script with a normal input and an edge case. If you cannot run it, say so.
+Reviewing is not fixing: don't edit the code unless asked.
 
-## 2. Inspection
-Review the entire function code, not just the partial diff. Search in this exact order:
-1. **Logic**: What happens with empty, null, zero, or negative inputs?
-2. **Silenced Errors** 🔴: `except: pass` hiding errors. Magic `default=` fallbacks.
-3. **Lying Returns** 🔴: Returning `True` on DB updates without checking `rowcount > 0`.
-4. **Broken Contracts**: Function signatures that changed and break callers.
-5. **Leftovers** 🟡: Debugging prints, commented code, `# BUG`.
+## 1. Run it before judging
+- Reported bug → reproduce it first.
+- Run every suspicious function with a normal input and an edge case in ONE call
+  (`python3 -c`, `node -e`). If it can't be run, say so.
 
-## 3. Reporting (Mandatory Format)
-Write the failure concretely ("with X, Y happens"). Use this exact structure:
+## 2. What to look for, in order
+1. **Logic**: empty, `None`, zero, negatives, a single element.
+2. **Silenced errors**: `except: pass`, `catch {}`, a `default=` that hides failures.
+3. **Lying returns**: `return True` without checking `rowcount`, status or response.
+4. **Broken contracts**: changed signatures that break callers.
+5. **Security**, if there's user input, auth, files or it's going to production: SQL/command
+   injection, path traversal, secrets in code, sensitive data in responses or logs, IDOR
+   (is it checked that the resource belongs to the user?).
+6. **Leftovers**: debug prints, commented-out code.
 
+## 3. Report
 ```
-### 🔴 filename.py:10 — summary of severe bug
-With [input], [problem] occurs. Fix: [solution].
+**Verdict in 2-5 words.**
 
-### 🟡 filename.py:20 — leftover or risk
-Residual print or generic exception.
+🔴 file:line — with <input>, <failure> happens. Fix: <how>.
+🟡 file:line — risk or leftover.
 
-### 🔵 filename.py:30 — simplification
-Redundant code.
+Checked: what you ran and what came out (or "static review, not executed").
 ```
+For security 🔴s, half a line on how it's exploited.
