@@ -5,30 +5,32 @@ It exists because when the model chooses, it always lands on the median
 import json, os, random, tempfile
 
 STYLES = [
-    # (weight, description)
-    (3, "Soft: 24-32px radii, light single-hue background, frosted glass, pill buttons with an arrow in a circle, wide and very faint shadows in the same hue, thin headlines"),
-    (2, "Photographic: one huge photo leads; white text on top and glass widgets with real data"),
-    (1, "Expressive editorial: huge type, saturated color, images framed like objects"),
-    (1, "Cinematic dark: near-black background, photo or render with dramatic light, thin and large headline"),
+    # (weight, description). Same families as prototypes.
+    (3, "Soft: very light single-hue background, white 28-radius cards, wide faint shadows in the same hue, black pill buttons with an arrow in a circle, weight-500 headlines"),
+    (2, "Minimal: white or 98 % grey, near-black ink and no accent; centered weight-500 headline and a single big image in a rounded card"),
+    (2, "Framed canvas: the page inside a 36-radius canvas set 16px from the edge on a muted colored background; hero object in the center"),
+    (2, "Photographic: one huge photo leads; white text on top and one glass widget with real data"),
+    (1, "Liquid glass: a live photo behind and translucent glass panels with a specular highlight on top; monochrome on top, no glows"),
+    (1, "Nothing (like the Nothing X app): black with #1b1b1b 20-radius cards, thin headlines, thin numbers with a slash (7/40), mono uppercase labels; no dot-matrix font and red on a single detail"),
+    (1, "Dark studio: flat black and a render with studio light; centered white headline; the light comes from the image, never the CSS"),
 ]
 HEROS = [
-    "Hero inside a 28px-radius card set 16-20px from the edge, photo full-bleed inside, headline on top",
-    "Large headline with a small pill-shaped image set between two words",
-    "Huge photo with a glass widget on top carrying real data (price, hours, directions)",
-    "Two-tone headline (one line in light grey) bottom-left, over the photo",
-    "Monumental full-width headline; the cropped photo peeks out underneath",
-    "Full-screen full-bleed photo with the headline inside, bottom-left",
-    "Narrow text column on the left and a huge vertical photo overflowing on the right",
-    "Collage: two or three overlapping images at different scales, headline crossing them",
-    "A giant sentence and below it a wide cropped photo, with a ribbon of real data",
-    "Asymmetric thirds: 2/3 flat color with the headline, 1/3 photo; nothing centered",
-    "The information as a printed object: ticket, label, menu or stamp, at large scale",
-    "Vertical headline, rotated 90 degrees, against the edge next to a tall photo",
+    # None is half text / half image: users find it the most "AI" thing there is.
+    "Centered headline (weight 500, tracking -0.03em) and below it the hero object or photo, big and centered",
+    "Centered headline + a segmented control with 3-4 real tabs + the UI or the service in a rounded card over a landscape photo",
+    "The hero is a rounded screen with margin: full-bleed photo inside, nav inside and a large headline at the bottom, over the image",
+    "Central object with 3-5 micro-cards of real data floating around it, each slightly rotated",
+    "Full-screen photo or render and a large headline anchored bottom-left, one sentence and nothing else",
+    "A giant word across the full width with the cut-out object in front covering part of the letters",
+    "Large centered headline with a small pill-shaped image set between two words",
+    "Huge photo with ONE glass widget on top carrying real data (hours, next appointment, directions)",
+    "Hero inside a 28-radius card set 16-20px from the edge, photo full-bleed and the headline centered on top",
 ]
 SIGNATURES = [
-    "Slow marquee with the business's real data: prices, hours, names",
-    "Giant section numbers overlapping the content",
+    "Slow marquee with the names of the business's services or pieces, never numbers",
     "Image revealed with clip-path as it enters the screen (animation-timeline: view())",
+    "The hero image starts as a card with margin and expands to full-bleed on scroll",
+    "A large paragraph that lights up word by word with the scroll",
     "Sticky section: the image stays put while the text scrolls past",
     "Horizontal scroll-snap row for the menu, catalog or projects",
     "Variable font that changes weight or width on hover or scroll",

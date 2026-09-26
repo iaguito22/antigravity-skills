@@ -23,7 +23,7 @@ These skills act as **mechanical stops and guardrails**. They have been kept com
 ### 🎨 Frontend & UI/UX
 | Skill | Primary Goal |
 |-------|--------------|
-| [`web-frontend`](web-frontend/SKILL.md) | **Art direction so pages don't look AI-made.** A die picks style, hero, signature and typefaces; `generate_image` supplies a real hero image; a linter (`revisa.py`) catches stock phrases, default fonts, fake "live" data and bloat. Also modern CSS and accessibility. |
+| [`web-frontend`](web-frontend/SKILL.md) | **Art direction so pages don't look AI-made.** A die picks style, hero, signature and typefaces; `generate_image` supplies a real hero image; `foto.py` compresses it; a linter (`revisa.py`) catches split heroes, colored headline words, rows of stats, glows, stock phrases, default fonts, fake "live" data and bloat. Also modern CSS and accessibility. |
 | [`react-hygiene`](react-hygiene/SKILL.md) | **Prohibits deriving state with `useEffect`** (the most common AI React anti-pattern), stable keys, no gratuitous memoization. |
 | [`web-3d`](web-3d/SKILL.md) | Fixes plastic-looking WebGL scenes: ACESFilmic, sRGB, shadow-camera framing and fill light in Three.js and R3F. |
 

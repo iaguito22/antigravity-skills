@@ -28,3 +28,11 @@ Benchmarked 11 real tasks with and without the skills (Gemini 3.7 Flash Low, Ant
 - **What Dribbble does that AI doesn't:** the image leads. Adding one `generate_image` hero plus a die for style/hero/signature/typefaces made three briefs look distinct and designed. Cost: ~110-150 s and ~12k output tokens per landing, versus ~60 s without images.
 - **Model choice:** Gemini 3.8 Flash Low was 1.5-4x slower than 3.7 Flash Low on the same 11 tasks with the same quality, and leaked reasoning into answers.
 
+
+## 2026-09-26 — Skill-doctor pass (Antigravity CLI 1.2.11)
+
+- **`unit-testing` was locking bugs in.** On code with a SQL injection it wrote 11 green tests that asserted the buggy behavior as expected. It now writes down the *correct* behavior first and asserts that: 9 tests, 2 red, injection reported.
+- **The AI tells users actually name** — split hero, one headline word in another color, a row of stats, pointless glows — are now banned in `web-frontend` and caught by `revisa.py`, together with emoji above the H1, cream + serif, overlays above 75 %, photos over 350 KB and made-up real-looking phone numbers (→ `000 000 000` plus a "Missing details" list).
+- **`foto.py`** compresses `generate_image` output (~850 → ~130 KB) and prints its size.
+- `revisa.py` accepts several files, flags the same headline or typeface across 3+ versions, and exits with 1 on warnings (so the skill chains it with `;`).
+- The die's styles and heroes now come from real Dribbble shots; none of the heroes is half text / half image.
