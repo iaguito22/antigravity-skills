@@ -36,3 +36,11 @@ Benchmarked 11 real tasks with and without the skills (Gemini 3.7 Flash Low, Ant
 - **`foto.py`** compresses `generate_image` output (~850 → ~130 KB) and prints its size.
 - `revisa.py` accepts several files, flags the same headline or typeface across 3+ versions, and exits with 1 on warnings (so the skill chains it with `;`).
 - The die's styles and heroes now come from real Dribbble shots; none of the heroes is half text / half image.
+
+
+## 2026-09-27 — `web-frontend`: photo-led anatomy and real multi-page sites
+
+- **A shop built without prototypes looked poor:** text heroes on flat backgrounds, cards without photos, spec tables. The skill now has a default anatomy (§1b): the hero is a full-screen photo *as background* with 2-4 small widgets on top (refs: Kumo matcha, Ranty/Halo Lab), a minimal catalog (pill filters + grid) and photo-first product cards. All six die heroes follow it, and `revisa.py` flags a hero without a background photo and product cards without photos.
+- **No more forced single-html landing.** By default the skill builds a real site: home, catalog with working filters, product pages, shared `css/`, `js/` and `data.js`. Pages stay thin (cards rendered from `data.js`, new pages via `cp index.html` + one `<main>` edit). HTML by default; Astro for >6 near-identical pages; React only with real state. The linter dropped the section/form/32 KB limits and now flags >12 KB of inline CSS/JS instead; cross-version checks only run on `p1..pN.html`.
+- **`generate_image` without a cap:** as many photos as the page needs; Unsplash only on 429. `foto.py` compresses several in one call.
+- Test (house catalog): 4-page site, clean linter, working filter; ~650 s and ~80k output tokens.

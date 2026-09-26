@@ -1,30 +1,28 @@
 #!/usr/bin/env python3
 """web-frontend die: a style, a hero layout, a signature and a type pairing.
 It exists because when the model chooses, it always lands on the median
-(cream + serif + split hero)."""
+(cream + serif + split hero, or a centered headline on a flat background with the photo below)."""
 import json, os, random, tempfile
 
 STYLES = [
-    # (weight, description). Same families as prototypes.
+    # (weight, description). `soft` weighs more: it is the author's taste. Same families as prototypes.
     (3, "Soft: very light single-hue background, white 28-radius cards, wide faint shadows in the same hue, black pill buttons with an arrow in a circle, weight-500 headlines"),
-    (2, "Minimal: white or 98 % grey, near-black ink and no accent; centered weight-500 headline and a single big image in a rounded card"),
-    (2, "Framed canvas: the page inside a 36-radius canvas set 16px from the edge on a muted colored background; hero object in the center"),
+    (2, "Minimal: white or 98 % grey, near-black ink and no accent; white widgets and weight-500 headlines; a very clean catalog"),
+    (2, "Framed canvas: the page inside a 36-radius canvas set 16px from the edge on a muted colored background; the hero photo sits inside the canvas"),
     (2, "Photographic: one huge photo leads; white text on top and one glass widget with real data"),
     (1, "Liquid glass: a live photo behind and translucent glass panels with a specular highlight on top; monochrome on top, no glows"),
     (1, "Nothing (like the Nothing X app): black with #1b1b1b 20-radius cards, thin headlines, thin numbers with a slash (7/40), mono uppercase labels; no dot-matrix font and red on a single detail"),
-    (1, "Dark studio: flat black and a render with studio light; centered white headline; the light comes from the image, never the CSS"),
+    (1, "Dark studio: a dark photo or render with studio light as the background, sections in flat black, white headlines; the light comes from the image, never the CSS"),
 ]
 HEROS = [
-    # None is half text / half image: users find it the most "AI" thing there is.
-    "Centered headline (weight 500, tracking -0.03em) and below it the hero object or photo, big and centered",
-    "Centered headline + a segmented control with 3-4 real tabs + the UI or the service in a rounded card over a landscape photo",
-    "The hero is a rounded screen with margin: full-bleed photo inside, nav inside and a large headline at the bottom, over the image",
-    "Central object with 3-5 micro-cards of real data floating around it, each slightly rotated",
-    "Full-screen photo or render and a large headline anchored bottom-left, one sentence and nothing else",
-    "A giant word across the full width with the cut-out object in front covering part of the letters",
-    "Large centered headline with a small pill-shaped image set between two words",
-    "Huge photo with ONE glass widget on top carrying real data (hours, next appointment, directions)",
-    "Hero inside a 28-radius card set 16-20px from the edge, photo full-bleed and the headline centered on top",
+    # All with the photo AS BACKGROUND and the information in widgets on top (Kumo, Ranty, Golfair).
+    # None is half text / half image, nor text on a flat background.
+    "Rounded canvas with margin and the background photo inside; the business's object in the center, 3-4 square glass tiles floating at its sides (variants, flavors, models) and the headline at the bottom, over the photo",
+    "Full-screen landscape or location photo; large headline top-left; on the right a white card with a thumbnail, two chips and a sentence; bottom-left a card with a small photo and bottom-right a big figure (12 m², 9 months) with its label",
+    "Full-bleed 100svh photo with an overlay only at the bottom; headline bottom-left and, bottom-right, a glass widget with the featured product (photo, name, price, button)",
+    "Background photo with a centered glass search or filter bar (3 real catalog selectors and a button) and the headline above it; two small cards in the corners",
+    "Background photo in a canvas with margin; glass nav inside; a glass segmented control at the top that switches the background photo (3-4 real options) and the headline centered at the bottom",
+    "Background photo with the product; 3 thin labels with a line pointing at parts of the product (material, size, detail) and the large headline bottom-left",
 ]
 SIGNATURES = [
     "Slow marquee with the names of the business's services or pieces, never numbers",

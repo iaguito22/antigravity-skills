@@ -121,6 +121,29 @@ def pistas_muy_ia(h, bajo, texto):
     return mal
 
 
+def anatomia(bajo):
+    """The default anatomy (skill §1b): photo AS BACKGROUND in the hero and a photo on every card."""
+    mal = []
+    cuerpo = re.sub(r"<(script|style)[^>]*>.*?</\1>", " ", bajo, flags=re.S)
+    css = " ".join(re.findall(r"<style[^>]*>(.*?)</style>", bajo, flags=re.S))
+    # 1. Hero: if the page's first image comes after the H1 and nothing sets it as background,
+    # the hero is a block of text on a flat background with the photo below.
+    i_h1 = cuerpo.find("<h1")
+    if i_h1 >= 0:
+        imgs = [x for x in (cuerpo.find("<img"), cuerpo.find("<video"), cuerpo.find("url(")) if x >= 0]
+        fondo_css = re.search(r"[^{}]*(hero|bg|fondo|backdrop|cover|stage)[^{}]*\{[^}]*background(-image)?\s*:[^;]*url\(", css)
+        if not fondo_css and (not imgs or min(imgs) > i_h1):
+            mal.append("hero without a background photo: the headline sits on a full-screen photo (§1b), not on a flat background with the photo below")
+    # 2. Product cards without a photo.
+    bloques = re.split(r"(?=<article\b)|(?=<(?:div|li|a)\b[^>]*class=\"(?:[^\"]*\s)?(?:card|product|producto|modelo|model|item|[a-z]+-card)(?:\s[^\"]*)?\")", cuerpo)
+    cards = [b for b in bloques[1:] if not re.match(r"<[^>]*(micro|widget|chip|stat|tech|visit|hero)", b)
+             and re.search(r"\d[\d.,]*\s*(€|eur\b|\$)|\$\s*\d", b[:2500])]
+    sin = [b for b in cards if not re.search(r"<img|<picture|url\(", b[:2500])]
+    if len(cards) >= 3 and len(sin) * 2 > len(cards):
+        mal.append("%d of %d product cards without a photo: the card is photo first (§1b)" % (len(sin), len(cards)))
+    return mal
+
+
 def familias(bajo):
     """Typefaces the page loads or declares, lowercased."""
     fam = set()
@@ -211,13 +234,12 @@ def revisa(ruta):
             mal.append("phone %s: if the user did not give it, use 000 000 000 and flag it in the report" % tel.strip())
             break
     mal += pistas_muy_ia(h, bajo, texto)
-    secciones = len(re.findall(r"<section\b", bajo))
-    if secciones > 6:
-        mal.append("%d sections: a landing needs 4-5" % secciones)
-    for f in re.findall(r"<form\b", bajo)[:1]:
-        mal.append("there is a <form>: if nobody asked for it, use phone/email/link instead")
-    if len(h) > 32000:
-        mal.append("%d KB: there is content nobody asked for" % (len(h) // 1000))
+    if not VARIAS and PORTADA(ruta):  # prototypes has its own anatomy per version
+        mal += anatomia(bajo)
+    # Huge CSS or JS inside the html: in a site it goes in shared css/ and js/.
+    dentro = sum(len(x) for x in re.findall(r"<(?:style|script)(?![^>]*\bsrc=)[^>]*>(.*?)</(?:style|script)>", h, flags=re.S))
+    if not VARIAS and dentro > 12000:
+        mal.append("%d KB of CSS/JS inside the html: move it to css/styles.css and js/main.js" % (dentro // 1000))
     return mal, fam, bool(fotos)
 
 
@@ -248,12 +270,12 @@ def main(rutas):
     if VARIAS and not con_foto:
         total += 1
         print("· no version has a photo: generate 1-2 with generate_image and use them")
-    for t, donde in titulares.items():
+    for t, donde in (titulares.items() if VARIAS else []):
         if len(donde) >= 2:
             total += 1
             print('· same headline in %s ("%s"): each version writes its own in its VOICE' %
                   (" ".join(donde), t[:60]))
-    if len(rutas) >= 3:
+    if VARIAS and len(rutas) >= 3:
         for f, donde in sorted(usos.items()):
             if len(donde) >= 3:
                 total += 1
@@ -263,5 +285,8 @@ def main(rutas):
 
 
 RUTAS = sys.argv[1:] or ["index.html"]
-VARIAS = len(RUTAS) > 1
+# Several VERSIONS of one page (prototypes: p1.html … p6.html) versus several PAGES of
+# one site (index, catalog, product…), which should share their typefaces.
+VARIAS = len(RUTAS) > 1 and all(re.fullmatch(r"p\d+\.html", os.path.basename(r)) for r in RUTAS)
+PORTADA = lambda r: len(RUTAS) == 1 or os.path.basename(r) == "index.html"
 main(RUTAS)
