@@ -11,6 +11,24 @@ These skills act as **mechanical stops and guardrails**. They have been kept com
 
 > 🔬 **Empirical Research:** You can read the scientific history of our stress tests, token costs, and how we solved "LLM disobedience" in the [`DEVLOG.md`](DEVLOG.md).
 
+## 📊 Measured, not claimed
+
+Same prompts, same model (Gemini 3.7 Flash Low, Antigravity CLI 1.2.11), run on 27/09/2026 with the skills installed and with a factory `agy`.
+
+![Same brief without and with web-frontend](docs/web-before-after.jpg)
+
+*"Hazme una web para Modula, una empresa gallega de casas modulares de madera. Tienen 6 modelos." Left: factory agy. Center and right: with `web-frontend`.*
+
+| Task | Without skills | With skills |
+|---|---|---|
+| **Website** (above) | 1 page, 4 linter warnings (colored headline word, stock phrase, fake "live" data, img without size), never opened in a browser | 4 pages (home, catalog with working filters, product page, contact), 8 generated photos, linter clean, opened and checked |
+| Output tokens | 81,002 | **36,896 (−54 %)** |
+| Time | 213 s | 629 s (the extra time is 8 `generate_image` photos and the visual checks) |
+| **Unit tests** for a module with an SQL injection and an off-by-one page bug | 12 green tests, 100 % coverage, **both bugs locked in** as expected behavior | 11 tests, **5 red: both bugs exposed** |
+| Time · output tokens | 47 s · 6,795 | 50 s · 8,776 |
+
+The web run is the interesting one: thinner pages rendered from one `data.js` and a single shared stylesheet mean the agent writes **half the code** for a site four times bigger.
+
 ## 🛠 Available Skills
 
 ### 🛡️ Backend & DevOps
