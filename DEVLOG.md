@@ -45,3 +45,29 @@ Benchmarked 11 real tasks with and without the skills (Gemini 3.7 Flash Low, Ant
 - **`generate_image` without a cap:** as many photos as the page needs; Unsplash only on 429. `foto.py` compresses several in one call.
 - Test (house catalog): 4-page site, clean linter, working filter; ~650 s and ~80k output tokens.
 - A/B against a factory `agy` (same brief, 27/09): with skills the site went from 1 page with 4 linter warnings to 4 pages with 8 photos and a clean linter, using 54 % fewer output tokens (36.9k vs 81.0k) but 3x the time (629 vs 213 s, photos and checks). `unit-testing`: 5 red tests exposing both planted bugs vs 12 green ones locking them in.
+
+## 2026-10-16 — Gemini 4 Argon: 6 skills → 3
+
+Re-ran the jobs on a factory `agy` 1.3.6 with Argon medium (Argon has its own weekly quota:
+a short question costs ~0.5 %, a bug fix 1-2 %, a landing 5-14 %).
+
+- **Argon is honest by default.** It corrects a false premise instead of agreeing, so the
+  old honesty rules were no-ops.
+- **It fixes and verifies on its own**: 9/9 on a bug task with hidden tests, writing its own
+  check scripts. Code review (8/8 planted bugs, code untouched), unit tests (all 4 bugs
+  exposed, none locked in) and React (no derived state in `useEffect`) were fine without
+  their skills → removed.
+- **What it still gets wrong:** chat formatting in a terminal (headings and a table for a
+  one-line question, LaTeX, `file://` links), never opening what it built, the AI web
+  template, and balloon-like 3D vegetation. Formatting and "open it" live in the rules
+  file and the hook of a-gemini-more-like-claude; taste lives here.
+- **The web skill got cheaper, not bigger.** With the skill Argon spent 14 % of its weekly
+  quota on one landing: it added a calculator and a booking form nobody asked for and ran
+  the full review loop four times. The skill now caps the site at three pages, bans
+  unrequested features and allows one extra review pass.
+- **3D:** factory Argon makes crowns out of flat-shaded icosahedra and clouds out of
+  spheres; its rocks crack because it displaces non-indexed vertices randomly. A tested
+  module beats instructions here: Argon copies `vegetation.js` and uses it correctly. A user
+  watching the window still spotted holes in clouds, rocks and leaves and over-bright flat
+  clouds: fixed with a solid gaussian vapor sprite, sun-side shading, an inner crown fill
+  and position-based rock displacement. Lesson: check far *and* close.

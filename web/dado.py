@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""web-frontend die: a style, a hero layout, a signature and a type pairing.
+"""Die for the web skill: a style, a hero layout, a signature and a type pairing.
 It exists because when the model chooses, it always lands on the median
 (cream + serif + split hero, or a centered headline on a flat background with the photo below)."""
 import json, os, random, tempfile

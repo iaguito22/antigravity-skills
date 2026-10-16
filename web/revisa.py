@@ -13,7 +13,7 @@ FRASES = ["sin prisa", "con calma", "honest", "artesan", "de la finca a la taza"
           "passion for", "discover", "elevate", "relentless", "no-nonsense", "next level",
           "seamless", "unlock", "world-class", "cutting-edge", "crafted with love"]
 FUENTES = ["Inter", "DM Sans", "Plus Jakarta Sans", "Poppins", "Montserrat", "Fraunces",
-           "Playfair Display", "Newsreader"]
+           "Playfair Display", "Newsreader", "Cormorant"]
 SERIFAS = ("instrument serif", "fraunces", "playfair", "newsreader", "cormorant", "garamond",
            "dm serif", "libre caslon", "lora", "gloock", "young serif", "erode", "zodiak",
            "gambetta", "sentient", "boska")
@@ -53,7 +53,9 @@ def pistas_muy_ia(h, bajo, texto):
     css = " ".join(re.findall(r"<style[^>]*>(.*?)</style>", bajo, flags=re.S))
     css = re.sub(r"/\*.*?\*/", " ", css, flags=re.S)
     # 1. Headline keyword in another color / colored italics / gradient.
-    for h1 in re.findall(r"<h1\b[^>]*>(.*?)</h1>", bajo, flags=re.S)[:1]:
+    for h1_attrs, h1 in re.findall(r"<h1\b([^>]*)>(.*?)</h1>", bajo, flags=re.S)[:1]:
+        h1_clases = re.findall(r'class="([^"]+)"', h1_attrs)
+        h1_clases = h1_clases[0].split() if h1_clases else []
         total = len(re.sub(r"<[^>]+>|\s+", "", h1)) or 1
         for tag, attrs, dentro in re.findall(r"<(span|em|i|strong|mark|b)\b([^>]*)>(.*?)</\1>", h1, flags=re.S):
             if "<img" in dentro or "<br" in dentro:
@@ -66,7 +68,8 @@ def pistas_muy_ia(h, bajo, texto):
                 for c in cls.split():
                     if re.search(r"\." + re.escape(c) + r"\b[^{]*\{[^}]*(?<!background-)(?<!-)color\s*:|\." + re.escape(c) + r"\b[^{]*\{[^}]*(gradient|text-fill)", css):
                         coloreado = True
-            if re.search(r"h1\s+" + tag + r"\b[^{]*\{[^}]*((?<!background-)(?<!-)color\s*:|gradient|text-fill)", css):
+            sel = "(?:h1" + "".join(r"|\." + re.escape(c) for c in h1_clases) + ")"
+            if re.search(sel + r"\s+" + tag + r"\b[^{]*\{[^}]*((?<!background-)(?<!-)color\s*:|gradient|text-fill)", css):
                 coloreado = True
             if coloreado:
                 mal.append("headline word in another color/colored italics: the H1 uses a single ink")
@@ -122,7 +125,7 @@ def pistas_muy_ia(h, bajo, texto):
 
 
 def anatomia(bajo):
-    """The default anatomy (skill §1b): photo AS BACKGROUND in the hero and a photo on every card."""
+    """The default anatomy (the skill's default anatomy): photo AS BACKGROUND in the hero and a photo on every card."""
     mal = []
     cuerpo = re.sub(r"<(script|style)[^>]*>.*?</\1>", " ", bajo, flags=re.S)
     css = " ".join(re.findall(r"<style[^>]*>(.*?)</style>", bajo, flags=re.S))
@@ -133,14 +136,14 @@ def anatomia(bajo):
         imgs = [x for x in (cuerpo.find("<img"), cuerpo.find("<video"), cuerpo.find("url(")) if x >= 0]
         fondo_css = re.search(r"[^{}]*(hero|bg|fondo|backdrop|cover|stage)[^{}]*\{[^}]*background(-image)?\s*:[^;]*url\(", css)
         if not fondo_css and (not imgs or min(imgs) > i_h1):
-            mal.append("hero without a background photo: the headline sits on a full-screen photo (§1b), not on a flat background with the photo below")
+            mal.append("hero without a background photo: the headline sits on a full-screen photo, not on a flat background with the photo below")
     # 2. Product cards without a photo.
     bloques = re.split(r"(?=<article\b)|(?=<(?:div|li|a)\b[^>]*class=\"(?:[^\"]*\s)?(?:card|product|producto|modelo|model|item|[a-z]+-card)(?:\s[^\"]*)?\")", cuerpo)
     cards = [b for b in bloques[1:] if not re.match(r"<[^>]*(micro|widget|chip|stat|tech|visit|hero)", b)
              and re.search(r"\d[\d.,]*\s*(€|eur\b|\$)|\$\s*\d", b[:2500])]
     sin = [b for b in cards if not re.search(r"<img|<picture|url\(", b[:2500])]
     if len(cards) >= 3 and len(sin) * 2 > len(cards):
-        mal.append("%d of %d product cards without a photo: the card is photo first (§1b)" % (len(sin), len(cards)))
+        mal.append("%d of %d product cards without a photo: the card is photo first" % (len(sin), len(cards)))
     return mal
 
 
@@ -161,7 +164,14 @@ def familias(bajo):
 
 
 def revisa(ruta):
-    h = open(ruta, encoding="utf-8", errors="replace").read()
+    h = h0 = open(ruta, encoding="utf-8", errors="replace").read()
+    # Linked stylesheets count as if they were inline: otherwise a colored word defined
+    # in styles.css slipped through.
+    base = os.path.dirname(os.path.abspath(ruta))
+    for href in re.findall(r'<link[^>]+href="([^"#?]+\.css)"', h, flags=re.I):
+        p = os.path.join(base, href)
+        if os.path.isfile(p):
+            h += "<style>" + open(p, encoding="utf-8", errors="replace").read() + "</style>"
     bajo = h.lower()
     texto = re.sub(r"<(script|style)[^>]*>.*?</\1>", " ", bajo, flags=re.S)
     texto = re.sub(r"<[^>]+>", " ", texto)
@@ -171,7 +181,7 @@ def revisa(ruta):
             mal.append('stock phrase: "%s" -> write a concrete fact' % f)
     fam = familias(bajo)
     for f in FUENTES:
-        if f.lower() in fam:
+        if any(x == f.lower() or x.startswith(f.lower() + " ") for x in fam):
             mal.append("default font: %s -> use the die's" % f)
     for p in VIVO:
         m = re.search(p, texto)
@@ -212,7 +222,7 @@ def revisa(ruta):
     # With several versions (prototypes) some may be type and SVG only: there the photo is
     # required of the set, in main, not of each one.
     if not fotos and not VARIAS and not re.search(r"<canvas|<video|three\.", bajo):
-        mal.append("not a single image: for a landing or portfolio the hero one is missing (generate_image)")
+        mal.append("not a single image: for a landing or portfolio the hero one is missing (generate it with invoke_subagent)")
     # Dark overlay eating the photo: a nearly opaque gradient over an image.
     if fotos:
         peor = 0.0
@@ -227,17 +237,23 @@ def revisa(ruta):
     for src in sorted(set(re.findall(r"""(?:src=|url\()\s*['"]?([^'")\s>]+\.(?:jpe?g|png|webp))""", h, flags=re.I))):
         f = os.path.join(base, src)
         if not src.startswith(("http", "data:")) and os.path.isfile(f) and os.path.getsize(f) > 350_000:
-            mal.append("%s weighs %d KB: compress it (see web-frontend skill §2)" % (src, os.path.getsize(f) // 1000))
+            mal.append("%s weighs %d KB: compress it (foto.py in this skill)" % (src, os.path.getsize(f) // 1000))
     # Real-looking phone numbers (Spanish format): if the user did not give them, they are made up.
     for tel in re.findall(r"(?<![\d.,])(?:\+34\s?)?[6789]\d{2}(?:[\s.]?\d{2,3}){3}(?![\d.,])", texto):
         if not re.fullmatch(r"(?:\+34\s?)?[6789](?:[\s.]?0)+", tel.strip()):
             mal.append("phone %s: if the user did not give it, use 000 000 000 and flag it in the report" % tel.strip())
             break
+    # Data a static site cannot know, and real-looking addresses.
+    if re.search(r"\d{1,3}\s*°\s*\d{1,2}\s*[′']\s*\d{0,2}", texto):
+        mal.append("GPS coordinates: remove them, they are set dressing")
+    dire = re.search(r"\b(calle|c/|rúa|rua|avenida|avda\.?|plaza|praza|paseo)\s+(de\s+|da\s+|do\s+|del\s+|la\s+|a\s+|o\s+)*[a-záéíóúñ]+[a-záéíóúñ ]{0,25},?\s+(n[ºo°]\s*)?\d{1,3}\b|\b\d{1,4}\s+[a-z]+(\s+[a-z]+)?\s+(street|st\.|avenue|ave\.|road|rd\.|lane|square)\b", texto)
+    if dire and "street, no" not in texto and "calle, n" not in texto:
+        mal.append('address "%s": if the user did not give it, use "Street, No." and flag it under Missing data' % dire.group(0).strip())
     mal += pistas_muy_ia(h, bajo, texto)
     if not VARIAS and PORTADA(ruta):  # prototypes has its own anatomy per version
         mal += anatomia(bajo)
     # Huge CSS or JS inside the html: in a site it goes in shared css/ and js/.
-    dentro = sum(len(x) for x in re.findall(r"<(?:style|script)(?![^>]*\bsrc=)[^>]*>(.*?)</(?:style|script)>", h, flags=re.S))
+    dentro = sum(len(x) for x in re.findall(r"<(?:style|script)(?![^>]*\bsrc=)[^>]*>(.*?)</(?:style|script)>", h0, flags=re.S))
     if not VARIAS and dentro > 12000:
         mal.append("%d KB of CSS/JS inside the html: move it to css/styles.css and js/main.js" % (dentro // 1000))
     return mal, fam, bool(fotos)
@@ -269,7 +285,7 @@ def main(rutas):
     # Several versions of a page: they must not converge on the same typeface.
     if VARIAS and not con_foto:
         total += 1
-        print("· no version has a photo: generate 1-2 with generate_image and use them")
+        print("· no version has a photo: generate 1-2 with invoke_subagent and use them")
     for t, donde in (titulares.items() if VARIAS else []):
         if len(donde) >= 2:
             total += 1

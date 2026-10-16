@@ -1,68 +1,54 @@
-# 🚀 Antigravity Skills
+# Antigravity Skills
 
 <p align="center">
-  <em>A collection of ultra-optimized, stress-tested skills to guide AI agent behavior within the <a href="https://github.com/google/antigravity">Antigravity</a> framework.</em>
+  <em>Measured skills for the Antigravity CLI (<code>agy</code>), rebuilt for Gemini 4 Argon.</em>
 </p>
 
-## ❓ Why use these skills?
-Large Language Models (LLMs) have bad habits. They love to write legacy CSS, abuse `useEffect` in React, create massive unreadable Git commits, and blindly patch bugs without instrumenting them first. 
+## Why so few now
 
-These skills act as **mechanical stops and guardrails**. They have been kept compact, refined, and iteratively stress-tested against the same tasks with and without them to force the AI to be efficient, methodical, and safe. 
+This repo used to ship six skills (code review, git hygiene, React hygiene, unit testing,
+web 3D, web frontend) tuned for Gemini 3.x. When **Gemini 4 Argon** came out (October 2026)
+I ran each job again on a factory `agy`. Argon does most of what those skills enforced
+on its own, so they now cost context and change nothing:
 
-> 🔬 **Empirical Research:** You can read the scientific history of our stress tests, token costs, and how we solved "LLM disobedience" in the [`DEVLOG.md`](DEVLOG.md).
+| Old skill | Argon without it |
+|---|---|
+| `code-review` | Found all 8 planted bugs (SQL injection, IDOR, path traversal, `except: pass` returning `True`, hardcoded key, password in logs…), ran a function to confirm one, didn't touch the code |
+| `unit-testing` | Its tests catch all 4 planted bugs (6 red) and all 12 pass on the fixed code: no bugs locked in as "expected" |
+| `react-hygiene` | `AbortController`, derived state without `useEffect`, keys by `id`, labeled inputs, compiles |
+| `git-hygiene` | Two lines in the rules file are enough |
+| `web-3d` | Already gets sRGB, shadows and pixel ratio right |
 
-## 📊 Measured, not claimed
+They are still in the git history. What Argon still gets wrong is **taste**, and that is
+what's left here.
 
-Same prompts, same model (Gemini 3.7 Flash Low, Antigravity CLI 1.2.11), run on 27/09/2026 with the skills installed and with a factory `agy`.
+## Skills
 
-![Same brief without and with web-frontend](docs/web-before-after.jpg)
+| Skill | What it fixes |
+|---|---|
+| [`web`](web/SKILL.md) | **Pages that don't look AI-made.** A die picks style, hero, signature and typefaces; the default anatomy is a full-screen photo with small glass widgets on top and photo-first cards; a linter (`revisa.py`) catches split heroes, colored headline words (also through classes and linked CSS), rows of stats, glows, stock phrases, default fonts, fake "live" data, GPS coordinates and made-up addresses. `foto.py` compresses generated photos. |
+| [`3d`](3d/SKILL.md) | **Trees and clouds that aren't balloons.** Argon builds crowns from flat-shaded icosahedra, clouds from stuck-together spheres and rocks that crack open. `vegetation.js` gives real leaf-card crowns with volume normals, sun-shaded vapor clouds and crack-free rocks with fracture faces; `inline.py` embeds it so the page still opens on double click. |
+| [`blender`](blender/SKILL.md) | The Blender MCP traps that crash a low-VRAM laptop: how to start it, asset resolution, a render setup that doesn't run out of GPU memory. |
 
-*"Hazme una web para Modula, una empresa gallega de casas modulares de madera. Tienen 6 modelos." Left: factory agy. Center and right: with `web-frontend`.*
+![Same brief, factory Argon vs Argon with the 3d skill](docs/3d-before-after.jpg)
 
-| Task | Without skills | With skills |
-|---|---|---|
-| **Website** (above) | 1 page, 4 linter warnings (colored headline word, stock phrase, fake "live" data, img without size), never opened in a browser | 4 pages (home, catalog with working filters, product page, contact), 8 generated photos, linter clean, opened and checked |
-| Output tokens | 81,002 | **36,896 (−54 %)** |
-| Time | 213 s | 629 s (the extra time is 8 `generate_image` photos and the visual checks) |
-| **Unit tests** for a module with an SQL injection and an off-by-one page bug | 12 green tests, 100 % coverage, **both bugs locked in** as expected behavior | 11 tests, **5 red: both bugs exposed** |
-| Time · output tokens | 47 s · 6,795 | 50 s · 8,776 |
+*"A forest clearing with a few trees and clouds in three.js." Left: factory Argon. Right:
+Argon with `3d`. The skill also tells it to keep the rest of the scene (grass, water,
+light) as rich as without it: the right-hand run was sparser, which is fixed in the skill
+but not re-measured.*
 
-The web run is the interesting one: thinner pages rendered from one `data.js` and a single shared stylesheet mean the agent writes **half the code** for a site four times bigger.
+Visual checks use `agy-ver` from
+[a-gemini-more-like-claude](https://github.com/iaguito22/a-gemini-more-like-claude), and
+the six-prototype skill lives in [ai-prototypes](https://github.com/iaguito22/ai-prototypes).
 
-## 🛠 Available Skills
-
-### 🛡️ Backend & DevOps
-| Skill | Primary Goal |
-|-------|--------------|
-| [`code-review`](code-review/SKILL.md) | Hunts real breakages, silent failures (`except: pass`) and security holes (SQLi, path traversal, secrets, IDOR). **Runs the suspicious code** before judging instead of just reading it. |
-| [`git-hygiene`](git-hygiene/SKILL.md) | **Forbids `git add .`**. Atomic, conventional commits in the repo's language; flags unversioned `.env` files; never pushes unasked. |
-| [`unit-testing`](unit-testing/SKILL.md) | Errors and limits first, happy path last. If a test exposes a real bug, it reports it instead of "fixing" the test. |
-
-### 🎨 Frontend & UI/UX
-| Skill | Primary Goal |
-|-------|--------------|
-| [`web-frontend`](web-frontend/SKILL.md) | **Art direction so pages don't look AI-made.** A die picks style, hero, signature and typefaces; the default anatomy is a full-screen background photo with widgets on top, a minimal catalog and photo-first product cards, built as a real multi-page site; `generate_image` supplies the photos and `foto.py` compresses them; a linter (`revisa.py`) catches split heroes, colored headline words, rows of stats, glows, stock phrases, default fonts, fake "live" data, heroes without a background photo and cards without photos. Also modern CSS and accessibility. |
-| [`react-hygiene`](react-hygiene/SKILL.md) | **Prohibits deriving state with `useEffect`** (the most common AI React anti-pattern), stable keys, no gratuitous memoization. |
-| [`web-3d`](web-3d/SKILL.md) | Fixes plastic-looking WebGL scenes: ACESFilmic, sRGB, shadow-camera framing and fill light in Three.js and R3F. |
-
-Visual checks use `agy-ver` from [a-gemini-more-like-claude](https://github.com/iaguito22/a-gemini-more-like-claude).
-
-*(Note: The `prototypes` skill is maintained in its own repository: [ai-prototypes](https://github.com/iaguito22/ai-prototypes)).*
-
-## 🚀 Installation
-
-The structure of this repository exactly matches what Antigravity expects. 
-
-Clone the repository and copy **only the skill directories** to your local Gemini config:
+## Installation
 
 ```bash
 git clone https://github.com/iaguito22/antigravity-skills.git /tmp/antigravity-skills
-cp -r /tmp/antigravity-skills/*/ ~/.gemini/config/skills/
+cp -r /tmp/antigravity-skills/{web,3d,blender} ~/.gemini/config/skills/
 rm -rf /tmp/antigravity-skills
 ```
 
-Or, clone it permanently and symlink it (recommended for easy updates):
-```bash
-git clone https://github.com/iaguito22/antigravity-skills.git ~/antigravity-skills
-ln -s ~/antigravity-skills/*/ ~/.gemini/config/skills/
-```
+Python for the scripts; Pillow for `foto.py`. Applies on the next `agy` session.
+
+The history of how these were measured is in [`DEVLOG.md`](DEVLOG.md).

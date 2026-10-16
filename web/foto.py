@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-"""Copies generate_image outputs next to the html, already compressed. Several in ONE call:
+"""Copies generated images next to the html, already compressed. Several in ONE call:
 Usage: foto.py <source> <dest.jpg> [<source2> <dest2.jpg> ...] [--width 1600]
-generate_image delivers 750-900 KB JPEGs: a landing with two weighed 1.6 MB."""
+Generated images come as 750-900 KB JPEGs: a landing with two weighed 1.6 MB."""
 import os, sys
 
 args = sys.argv[1:]
