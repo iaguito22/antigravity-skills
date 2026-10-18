@@ -71,3 +71,15 @@ a short question costs ~0.5 %, a bug fix 1-2 %, a landing 5-14 %).
   watching the window still spotted holes in clouds, rocks and leaves and over-bright flat
   clouds: fixed with a solid gaussian vapor sprite, sun-side shading, an inner crown fill
   and position-based rock displacement. Lesson: check far *and* close.
+
+## 2026-10-18 — `caelestia`
+
+- **Tokens read from the shell, not from memory.** Dumped with `qs -p` and `import Caelestia.Config`:
+  rounding and spacing are 4 · 8 · 12 · 16 · 28 · pill, durations 150/200 ms (effects) and
+  350/500/650 ms (spatial), sans is Rubik. The curve values aren't exposed to QML, so `tokens.py`
+  uses the M3 expressive ones.
+- **Check with Gemini 3.8 Flash Medium:** "a battery/CPU panel, caelestia style" loaded the skill on
+  its own and used the tokens (17 hits: pill/xl radii, glass, Rubik). It also added a decorative
+  "CAELESTIA" chip; the no-decoration rule was added after that run and is not re-measured.
+- **Not measured against a factory `agy`.**
+

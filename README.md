@@ -29,6 +29,7 @@ what's left here.
 | [`web`](web/SKILL.md) | **Pages that don't look AI-made.** A die picks style, hero, signature and typefaces; the default anatomy is a full-screen photo with small glass widgets on top and photo-first cards; a linter (`revisa.py`) catches split heroes, colored headline words (also through classes and linked CSS), rows of stats, glows, stock phrases, default fonts, fake "live" data, GPS coordinates and made-up addresses. `foto.py` compresses generated photos. |
 | [`3d`](3d/SKILL.md) | **Trees and clouds that aren't balloons.** Argon builds crowns from flat-shaded icosahedra, clouds from stuck-together spheres and rocks that crack open. `vegetation.js` gives real leaf-card crowns with volume normals, sun-shaded vapor clouds and crack-free rocks with fracture faces; `inline.py` embeds it so the page still opens on double click. |
 | [`blender`](blender/SKILL.md) | The Blender MCP traps that crash a low-VRAM laptop: how to start it, asset resolution, a render setup that doesn't run out of GPU memory. |
+| [`caelestia`](caelestia/SKILL.md) | **Interfaces that look like the [Caelestia](https://github.com/caelestia-dots/shell) desktop.** `tokens.py` prints the shell's real tokens (role colours from the live wallpaper scheme, the 4·8·12·16·28·pill scale, M3 durations and curves, glass) as CSS or QML, with a neutral fallback. The rules come from five interfaces built in that style (a game HUD, a Spotify theme, an SDDM login, a boot animation, an mpv skin): one accent, concentric radii, inset-only glow, motion that transforms instead of cutting. |
 
 ![Same brief, factory Argon vs Argon with the 3d skill](docs/3d-before-after.jpg)
 
@@ -45,7 +46,7 @@ the six-prototype skill lives in [ai-prototypes](https://github.com/iaguito22/ai
 
 ```bash
 git clone https://github.com/iaguito22/antigravity-skills.git /tmp/antigravity-skills
-cp -r /tmp/antigravity-skills/{web,3d,blender} ~/.gemini/config/skills/
+cp -r /tmp/antigravity-skills/{web,3d,blender,caelestia} ~/.gemini/config/skills/
 rm -rf /tmp/antigravity-skills
 ```
 
