@@ -80,6 +80,9 @@ a short question costs ~0.5 %, a bug fix 1-2 %, a landing 5-14 %).
   uses the M3 expressive ones.
 - **Check with Gemini 3.8 Flash Medium:** "a battery/CPU panel, caelestia style" loaded the skill on
   its own and used the tokens (17 hits: pill/xl radii, glass, Rubik). It also added a decorative
-  "CAELESTIA" chip; the no-decoration rule was added after that run and is not re-measured.
+  "CAELESTIA" chip. Rewritten with the writing-for-agents rules (positive targets instead of bans,
+  values left to `tokens.py`): the weak word "functional" still let a "Caelestia Desktop" chip, a
+  mode pill and a source footer through; "data and controls only" plus naming those cases gave a
+  clean panel on the next run.
 - **Not measured against a factory `agy`.**
 
