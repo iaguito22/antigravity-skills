@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
-"""Copies generated images next to the html, already compressed. Several in ONE call:
-Usage: foto.py <source> <dest.jpg> [<source2> <dest2.jpg> ...] [--width 1600]
-Generated images come as 750-900 KB JPEGs: a landing with two weighed 1.6 MB."""
+"""Copia imagenes de generate_image junto al html, ya comprimidas. Varias en UNA llamada:
+Uso: foto.py <origen> <destino.jpg> [<origen2> <destino2.jpg> ...] [--ancho 1600]
+generate_image entrega JPEG de 750-900 KB: una landing con dos pesaba 1,6 MB."""
 import os, sys
 
 args = sys.argv[1:]
 ancho = 1600
-if "--width" in args:
-    i = args.index("--width"); ancho = int(args[i + 1]); del args[i:i + 2]
+if "--ancho" in args:
+    i = args.index("--ancho"); ancho = int(args[i + 1]); del args[i:i + 2]
 if not args or len(args) % 2:
     sys.exit(__doc__)
 for orig, dest in zip(args[::2], args[1::2]):

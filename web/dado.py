@@ -1,73 +1,73 @@
 #!/usr/bin/env python3
-"""Die for the web skill: a style, a hero layout, a signature and a type pairing.
-It exists because when the model chooses, it always lands on the median
-(cream + serif + split hero, or a centered headline on a flat background with the photo below)."""
-import json, os, random, tempfile
+"""Dado de la skill web: una maquetacion de hero, una firma y una pareja tipografica.
+Existe porque, si eliges tu, sale siempre la mediana (crema + serif + hero partido,
+o titular centrado sobre fondo liso con la foto debajo)."""
+import json, os, random, sys, tempfile
 
-STYLES = [
-    # (weight, description). `soft` weighs more: it is the author's taste. Same families as prototypes.
-    (3, "Soft: very light single-hue background, white 28-radius cards, wide faint shadows in the same hue, black pill buttons with an arrow in a circle, weight-500 headlines"),
-    (2, "Minimal: white or 98 % grey, near-black ink and no accent; white widgets and weight-500 headlines; a very clean catalog"),
-    (2, "Framed canvas: the page inside a 36-radius canvas set 16px from the edge on a muted colored background; the hero photo sits inside the canvas"),
-    (2, "Photographic: one huge photo leads; white text on top and one glass widget with real data"),
-    (1, "Liquid glass: a live photo behind and translucent glass panels with a specular highlight on top; monochrome on top, no glows"),
-    (1, "Nothing (like the Nothing X app): black with #1b1b1b 20-radius cards, thin headlines, thin numbers with a slash (7/40), mono uppercase labels; no dot-matrix font and red on a single detail"),
-    (1, "Dark studio: a dark photo or render with studio light as the background, sections in flat black, white headlines; the light comes from the image, never the CSS"),
+ESTILOS = [
+    # (peso, descripcion). `suave` pesa mas: es el gusto del usuario. Mismas familias que prototypes.
+    (3, "Suave: fondo de un solo tono muy claro, tarjetas blancas de radio 28, sombras amplias y tenues del mismo tono, botones pildora negros con flecha en circulo, titulares de peso 500"),
+    (2, "Minimal: blanco o gris 98 %, tinta casi negra y ningun acento; widgets blancos y titulares de peso 500; el catalogo, muy limpio"),
+    (2, "Lienzo enmarcado: la pagina dentro de un lienzo de radio 36 separado 16px del borde sobre un fondo de color apagado; la foto del hero va dentro del lienzo"),
+    (2, "Fotografico: una foto enorme manda; texto blanco encima y un widget de vidrio con datos reales"),
+    (1, "Liquid glass: foto viva detras y paneles de vidrio translucido con brillo especular arriba; monocromo encima, sin glows"),
+    (1, "Nothing (como la app Nothing X): negro con tarjetas #1b1b1b de radio 20, titulares finos, cifras finas con barra (7/40), etiquetas en mono mayusculas; sin fuente de puntos y el rojo en un solo detalle"),
+    (1, "Estudio oscuro: foto o render oscuro con luz de estudio de fondo, secciones en negro plano, titulares blancos; la luz la pone la imagen, nunca el CSS"),
 ]
 HEROS = [
-    # All with the photo AS BACKGROUND and the information in widgets on top (Kumo, Ranty, Golfair).
-    # None is half text / half image, nor text on a flat background.
-    "Rounded canvas with margin and the background photo inside; the business's object in the center, 3-4 square glass tiles floating at its sides (variants, flavors, models) and the headline at the bottom, over the photo",
-    "Full-screen landscape or location photo; large headline top-left; on the right a white card with a thumbnail, two chips and a sentence; bottom-left a card with a small photo and bottom-right a big figure (12 m², 9 months) with its label",
-    "Full-bleed 100svh photo with an overlay only at the bottom; headline bottom-left and, bottom-right, a glass widget with the featured product (photo, name, price, button)",
-    "Background photo with a centered glass search or filter bar (3 real catalog selectors and a button) and the headline above it; two small cards in the corners",
-    "Background photo in a canvas with margin; glass nav inside; a glass segmented control at the top that switches the background photo (3-4 real options) and the headline centered at the bottom",
-    "Background photo with the product; 3 thin labels with a line pointing at parts of the product (material, size, detail) and the large headline bottom-left",
+    # Todos con la foto DE FONDO y la informacion en widgets encima (Kumo, Ranty, Golfair).
+    # Ninguno es mitad texto / mitad imagen ni texto sobre un fondo liso.
+    "Lienzo redondeado con margen y la foto de fondo dentro; objeto del negocio en el centro, 3-4 fichas cuadradas de vidrio flotando a sus lados (variantes, sabores, modelos) y el titular abajo, pisando la foto",
+    "Foto de paisaje o del sitio a pantalla completa; titular grande arriba a la izquierda; a la derecha una tarjeta blanca con una miniatura, dos chips y una frase; abajo a la izquierda una tarjeta con foto pequena y abajo a la derecha un dato grande (12 m², 9 meses) con su etiqueta",
+    "Foto a sangre de 100svh con velo solo abajo; titular abajo a la izquierda y, abajo a la derecha, un widget de vidrio con el producto destacado (foto, nombre, precio, boton)",
+    "Foto de fondo con una barra de busqueda o de filtros de vidrio centrada (3 selectores reales del catalogo y un boton) y el titular encima; dos tarjetitas en las esquinas",
+    "Foto de fondo en lienzo con margen; nav de vidrio dentro; un control segmentado de vidrio arriba que cambia la foto de fondo (3-4 opciones reales) y el titular centrado abajo",
+    "Foto de fondo con el producto; 3 etiquetas finas con linea que senalan partes del producto (material, medida, detalle) y el titular grande abajo a la izquierda",
 ]
-SIGNATURES = [
-    "Slow marquee with the names of the business's services or pieces, never numbers",
-    "Image revealed with clip-path as it enters the screen (animation-timeline: view())",
-    "The hero image starts as a card with margin and expands to full-bleed on scroll",
-    "A large paragraph that lights up word by word with the scroll",
-    "Sticky section: the image stays put while the text scrolls past",
-    "Horizontal scroll-snap row for the menu, catalog or projects",
-    "Variable font that changes weight or width on hover or scroll",
-    "Each section changes the whole page background color as it enters",
-    "List (menu, services) that shows a floating image on hover",
-    "Visible grid of thin lines as a graphic element across the page",
-    "Very subtle SVG paper grain over flat backgrounds and one saturated accent",
+FIRMAS = [
+    "Cinta (marquee) lenta con nombres de servicios o piezas del negocio, nunca cifras",
+    "Imagen que se revela con clip-path al entrar en pantalla (animation-timeline: view())",
+    "La imagen del hero empieza como tarjeta con margen y se expande a sangre al hacer scroll",
+    "Un parrafo grande que se enciende palabra a palabra con el scroll",
+    "Seccion sticky: la imagen se queda fija mientras el texto pasa a su lado",
+    "Fila horizontal con scroll-snap para la carta, el catalogo o los proyectos",
+    "Fuente variable que cambia de peso o anchura al pasar el raton o con el scroll",
+    "Cada seccion cambia el color de fondo de toda la pagina al entrar en ella",
+    "Lista (carta, servicios) que al pasar el raton muestra una imagen flotante",
+    "Reticula visible de lineas finas como elemento grafico de toda la pagina",
+    "Grano de papel SVG muy sutil sobre fondos planos y un color de acento saturado",
 ]
-TYPES = [
-    "General Sans (Fontshare) 300 for large headlines + 400 for text",
+TIPOS = [
+    "General Sans (Fontshare) 300 en titulares grandes + 400 en texto",
     "Satoshi (Fontshare) 300-500",
-    "Urbanist 300 for headlines + Manrope for text",
-    "Switzer (Fontshare) 300 for headlines + Geist Mono for data",
-    "Bricolage Grotesque (headlines) + Instrument Sans (text)",
-    "Instrument Serif (very large headlines) + Geist (text)",
-    "Archivo at expanded width (wdth 125) for headlines + regular Archivo",
-    "Big Shoulders Display (headlines) + IBM Plex Sans (text)",
-    "Familjen Grotesk (headlines) + Fragment Mono (data and labels)",
-    "Gloock (headlines) + Figtree (text)",
-    "Young Serif (headlines) + Onest (text)",
-    "Schibsted Grotesk (headlines) + Libre Caslon Text (text)",
-    "Unbounded (headlines) + Manrope (text)",
-    "Syne (headlines) + Space Mono (data and labels)",
+    "Urbanist 300 en titulares + Manrope en texto",
+    "Switzer (Fontshare) 300 en titulares + Geist Mono en datos",
+    "Bricolage Grotesque (titulares) + Instrument Sans (texto)",
+    "Instrument Serif (titulares muy grandes) + Geist (texto)",
+    "Archivo con anchura expandida (wdth 125) para titulares + Archivo normal",
+    "Big Shoulders Display (titulares) + IBM Plex Sans (texto)",
+    "Familjen Grotesk (titulares) + Fragment Mono (datos y etiquetas)",
+    "Gloock (titulares) + Figtree (texto)",
+    "Young Serif (titulares) + Onest (texto)",
+    "Schibsted Grotesk (titulares) + Libre Caslon Text (texto)",
+    "Unbounded (titulares) + Manrope (texto)",
+    "Syne (titulares) + Space Mono (datos y etiquetas)",
 ]
 
 hist = os.path.join(tempfile.gettempdir(), "web-frontend-dado.json")
 try:
-    last = json.load(open(hist))
+    ultimo = json.load(open(hist))
 except Exception:
-    last = {}
-pick = {"style": random.choices([s for _, s in STYLES], [w for w, _ in STYLES])[0]}
-for key, options in (("hero", HEROS), ("signature", SIGNATURES), ("types", TYPES)):
-    pool = [x for x in options if x != last.get(key)] or options
-    pick[key] = random.choice(pool)
+    ultimo = {}
+elegido = {"estilo": random.choices([e for _, e in ESTILOS], [w for w, _ in ESTILOS])[0]}
+for clave, lista in (("hero", HEROS), ("firma", FIRMAS), ("tipos", TIPOS)):
+    opciones = [x for x in lista if x != ultimo.get(clave)] or lista
+    elegido[clave] = random.choice(opciones)
 try:
-    json.dump(pick, open(hist, "w"))
+    json.dump(elegido, open(hist, "w"))
 except Exception:
     pass
-print("STYLE:     " + pick["style"])
-print("HERO:      " + pick["hero"])
-print("SIGNATURE: " + pick["signature"])
-print("TYPES:     " + pick["types"])
+print("ESTILO: " + elegido["estilo"])
+print("HERO:  " + elegido["hero"])
+print("FIRMA: " + elegido["firma"])
+print("TIPOS: " + elegido["tipos"])

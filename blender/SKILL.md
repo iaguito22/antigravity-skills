@@ -1,36 +1,36 @@
 ---
 name: blender
 description: >-
-  Blender through its MCP: scenes, models, materials, Poly Haven/Sketchfab, renders with
-  Cycles or EEVEE. The traps on a low-VRAM laptop that crash the session.
+  Blender por su MCP: escenas, modelos, materiales, Poly Haven/Sketchfab, renders con
+  Cycles o EEVEE. Las trampas de este portátil que tumban la sesión.
 ---
 
-# Blender on a low-VRAM laptop
+# Blender en este portátil
 
-## Start
-- `run_command` with `blender` as is, no `&` or `setsid` (agy backgrounds it and it stays
-  alive; with `setsid … &` it closed). With the UI: with `blender -b` the MCP addon doesn't
-  listen. Ready when `get_addon_status` says `up_to_date: true`.
-- Poly Haven, Sketchfab and Poly Pizza are off per scene and answer
-  `Unknown command type`. First:
-  `bpy.context.scene.blendermcp_use_polyhaven = True` (and `_use_polypizza`, `_use_sketchfab`).
+## Arrancar
+- `run_command` con `~/.local/bin/blender` tal cual, sin `&` ni `setsid` (agy lo pasa a
+  segundo plano y sigue vivo; con `setsid … &` se cerraba). Con interfaz: con `blender -b`
+  el addon del MCP no escucha. Listo cuando `get_addon_status` dice `up_to_date: true`.
+- Poly Haven, Sketchfab y Poly Pizza vienen apagados por escena y devuelven
+  `Unknown command type`. Primero:
+  `bpy.context.scene.blendermcp_use_polyhaven = True` (y `_use_polypizza`, `_use_sketchfab`).
 
 ## Assets
-- Poly Haven always at `resolution: "1k"`: 2k and 4k exceed the MCP's 3-minute timeout.
-- Tested: trees `fir_sapling`, `tree_small_02`; rock `boulder_01`; ground
+- Poly Haven siempre a `resolution: "1k"`: 2k y 4k pasan el timeout de 3 min del MCP.
+- Probados: árboles `fir_sapling`, `tree_small_02`; roca `boulder_01`; suelo
   `forest_ground_04`; HDRI `alps_field`.
-- Many copies = linked duplicates (`o = template.copy(); o.data = template.data`),
-  30-60 at most.
+- Muchas copias = duplicados enlazados (`o = plantilla.copy(); o.data = plantilla.data`),
+  30-60 como mucho.
 
-## A render that doesn't crash
-- Hybrid GPU with little VRAM: Cycles OptiX gives `out of GPU memory` and EEVEE Next with
-  dense meshes takes down the iGPU (`amdgpu: context is lost`). The stable option: Cycles
-  on CPU, 32 samples and the denoiser.
-- Color: `view_transform = 'AgX'`, `look = 'AgX - Base Contrast'`; HDRI at strength ~2 plus
-  a warm sun (~16) so nothing comes out as a silhouette.
-- Aim the camera at a point: `cam.rotation_euler = (target - cam.location).to_track_quat('-Z', 'Y').to_euler()`,
-  and nothing closer than 3 m to the lens.
+## Render que no se cae
+- GPU híbrida con poca VRAM: Cycles OptiX da `out of GPU memory` y EEVEE Next con mallas
+  densas tumba la iGPU (`amdgpu: context is lost`). Lo estable: Cycles en CPU, 32 muestras
+  y denoiser.
+- Color: `view_transform = 'AgX'`, `look = 'AgX - Base Contrast'`; HDRI a fuerza ~2 más un
+  sol cálido (~16) para que no salgan siluetas.
+- Cámara a un punto: `cam.rotation_euler = (objetivo - cam.location).to_track_quat('-Z', 'Y').to_euler()`,
+  y nada a menos de 3 m de la lente.
 
-## Check (done = render looked at)
-Render to a png, open it with `view_file` and look at it like the user would: framing,
-black silhouettes, object scale, floating objects. To show it: `setsid xdg-open render.png &`.
+## Comprobar (hecho = render mirado)
+Renderiza a un png, ábrelo con `view_file` y míralo como él: encuadre, siluetas negras,
+escala de los objetos, flotantes. Para enseñárselo: `setsid xdg-open render.png &`.

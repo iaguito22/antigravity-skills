@@ -1,58 +1,54 @@
 ---
 name: caelestia
 description: >-
-  Caelestia, the Hyprland/Quickshell desktop style, for the user's own interfaces: a game HUD
-  or menus, app themes (Spotify, mpv, a browser, an SDDM login), widgets and personal
-  dashboards. Use it on "caelestia style" / "estilo caelestia", "like my desktop", or when
-  building the UI of one of the user's own projects with no style given. Business websites
-  go to `web`.
+  Caelestia, el estilo de su escritorio, para interfaces SUYAS: HUD o menús de un juego,
+  temas de apps (Spotify, mpv, Zen, login), widgets y paneles propios. Úsala con "estilo
+  caelestia", "como mi escritorio", o al hacer la interfaz de un proyecto suyo sin estilo
+  dado. Las webs de negocio van con `web`.
 ---
 
-# Caelestia, the way it looks on the desktop
+# Caelestia como en sus proyectos
 
-**Data and controls only**: every element is a figure the user wants to see or a control
-they use, and each figure appears once. The style's name, a brand, the current mode or where
-the data comes from are not data (models add them as a chip or a footer). Glass, colour and
-motion have a job too. The scripts are run, not read.
+**Solo datos y controles**: cada elemento es un dato que él quiere ver o un control que usa,
+y cada dato sale una vez. El nombre del estilo, una marca, el modo actual o de dónde salen
+los datos no son datos (Flash los puso dos veces como chip y como pie). El vidrio, el color
+y el movimiento también tienen un trabajo. Cómo lo resolvió en sus otras interfaces (y dónde
+vive cada tema, Zen incluido): `temas.md`, en esta carpeta.
 
-## 1. Tokens (one call, paste as is)
-`python3 ~/.gemini/config/skills/caelestia/tokens.py` → a `:root` block with the role
-colours of the current wallpaper scheme, radii, spacing, curves and glass. `--qml` for QML,
-`--neutral` for a neutral palette (anything that won't read `scheme.json`: a published
-page, a game). If it runs on the user's machine, read
-`~/.local/state/caelestia/scheme.json` live and follow its light/dark `mode`.
+## 1. Tokens (una llamada, se pegan tal cual)
+`python3 ~/.gemini/config/skills/caelestia/tokens.py` → `:root` con los colores por rol de
+su fondo actual, la escala de radios y espacios, curvas, duraciones y vidrio. `--qml` para
+QML, `--sin-color` para la paleta neutra (lo que no lee su `scheme.json`: algo publicado,
+un juego). Si corre en su equipo, que lea `~/.local/state/caelestia/scheme.json` en vivo y
+siga su modo claro/oscuro.
 
-## 2. How to use them
-- **One accent.** Surfaces + `primary`; the accent can come from the content (album art's
-  dominant colour, animated with `@property`) or be white. Status colours (sectors, flags,
-  warnings) are vivid and saturated so they read over a busy scene.
-- **Concentric radii**: inner radius = outer radius − the gap between them (panel 28 → gap
-  12 → card 16 → artwork 8), always from the scale. Buttons, chips, tabs and status bars
-  are pills; icons and positions are circles.
-- **Glass**: `--panel` + `backdrop-filter: var(--glass)`, `--line` border and `--shadow`.
-  Accent sheen or tint goes on the inside (`inset`), so it doesn't tint what's underneath.
-- **Type**: Rubik (the shell's sans) or Figtree, weights 500-800, `tabular-nums` for
-  figures; big numbers bold (a 128 px clock with `letter-spacing: -2px`). Material Symbols
-  Rounded icons; CaskaydiaCove NF for mono.
-- **Motion that transforms**: the new state grows out of the old one (an iris closing, a
-  panel expanding, a window that opens with the same aspect ratio and radius as the iris
-  before it so they join), with the tokens' curves and durations, and each state ends on
-  the colour the next one starts with.
-- **Clean surface**: scrolling without scrollbars; keyboard focus changes the pill's
-  background (rings and halos read as noise); hover = a soft background or border on the
-  row. Text over a photo or video is white; in light mode, bars over video stay dark
+## 2. Cómo se usan
+- **Un acento.** Superficies + `primary`; el acento puede salir del contenido (en Spotify,
+  el color dominante de la carátula, animado con `@property`) o ser blanco (F1). Los
+  colores de estado (sectores, banderas, avisos) van vivos y saturados para leerse sobre
+  una escena.
+- **Radios concéntricos**: radio de dentro = radio de fuera − margen (Spotify: panel 28 →
+  margen 12 → tarjeta 16 → carátula 8), siempre de la escala. Botones, chips, pestañas y
+  barras de estado en píldora; iconos y posiciones en círculo.
+- **Vidrio**: `--panel` + `backdrop-filter: var(--glass)`, borde `--line` y `--shadow`. El
+  brillo o tinte del acento va por dentro (`inset`), para no teñir lo de debajo.
+- **Tipografía**: Rubik (la del shell) o Figtree, pesos 500-800, cifras `tabular-nums`;
+  los números grandes en negrita (reloj del login 128 px, `letter-spacing: -2px`). Iconos
+  Material Symbols Rounded; mono CaskaydiaCove NF.
+- **Movimiento que transforma**: lo nuevo crece desde lo que había (iris que se cierra,
+  panel que se expande, ventanita con la misma proporción y radio que el iris anterior para
+  que empalme), con las curvas y duraciones de los tokens, y cada estado acaba en el color
+  con el que empieza el siguiente.
+- **Superficie limpia**: scroll sin barras; el foco de teclado cambia el fondo de la píldora
+  (le molesta cualquier anillo o halo); hover = fondo o borde suave de la fila. Texto sobre
+  foto o vídeo en blanco; en modo claro, las barras sobre vídeo siguen oscuras
   (`inverseSurface`).
 
-## 3. QML traps
-- Colour properties are named `fg…`/`c…` (as `tokens.py --qml` prints them): one starting
-  with `on` is parsed as a signal handler and renders black.
-- Blur the image before loading it: a live `MultiEffect` blur leaves rings.
-- A `Repeater` gets a fixed-size model + `visible`: when the size changes it recreates
-  everything and flickers.
-- Test without touching the session: `qs -p <file>.qml`.
+Para escribirlo y probarlo en Hyprland/Quickshell (y las trampas de QML): skill `escritorio`.
 
-## 4. Choose and check
-If a decision is still open (accent, a variant of one piece), make 3-6 small mock-ups side
-by side and let the user pick. Done = looked at (screenshot), in both modes if it reads the
-scheme: `caelestia scheme set -m light|dark` changes the user's whole desktop, so finish in
-the mode you found it in.
+## 3. Elegir y comprobar
+Si queda una decisión abierta (acento, variante de una pieza), haz 3-6 maquetas pequeñas
+lado a lado y que elija él. Hecho = mirado con `agy-ver abrir … && agy-ver foto` (o
+`agy-pantalla foto` si es de escritorio), en los dos modos si lee el esquema:
+`caelestia scheme set -m light|dark` cambia SU escritorio, así que acaba en el modo en que
+lo encontraste.

@@ -1,49 +1,48 @@
 ---
 name: 3d
 description: >-
-  Trees, bushes, leaves, clouds and rocks in three.js / WebGL scenes: use the tested module
-  instead of spheres or icosahedra. Use it as soon as a 3D scene has vegetation, sky or rocks.
+  Árboles, arbustos, hojas y nubes en escenas three.js / WebGL: usa el módulo probado en
+  vez de esferas o icosaedros. Úsala en cuanto una escena 3D lleve vegetación o cielo.
 ---
 
-# Vegetation and clouds that don't look like balloons
+# Vegetación y nubes que no parezcan globos
 
-The default habit is a crown made of spheres or flat-shaded icosahedra and a cloud made of
-stuck-together spheres: it looks like a toy, like balloons. And rocks, displacing vertices
-with `Math.random()`, come out cracked (faces don't share vertices). The realistic look
-comes from many small textured **cards** with alpha: leaf cards carrying the crown's volume
-normal, and vapor sprites for clouds. That is already built and tested in `vegetation.js`.
+Tu costumbre es hacer la copa con esferas o icosaedros con `flatShading` y la nube con
+esferas pegadas: queda de juguete, como globos. Y las rocas, deformando vértices con
+`Math.random()`, salen agrietadas (las caras no comparten vértices). El aspecto realista sale de muchas
+**tarjetas** pequeñas con textura y alpha: tarjetas de hojas con la normal del volumen de
+la copa, y sprites de vapor para las nubes. Eso ya está hecho y probado en `vegetacion.js`.
 
-## Use it (the module is copied, not read or rewritten)
-`cp ~/.gemini/config/skills/3d/vegetation.js .` next to `index.html`, and in a
-`<script type="module">` with the `three` importmap:
+## Usarlo (el módulo se copia, no se lee ni se reescribe)
+`cp ~/.gemini/config/skills/3d/vegetacion.js .` junto al `index.html`, y en un
+`<script type="module">` con el importmap de `three`:
 ```js
-import { tree, cloud, rock, sway } from './vegetation.js';
-const t = tree({ kind: 'oak', height: 6 });   // 'oak' | 'birch' | 'pine', height 4-9
-t.position.set(x, 0, z); scene.add(t);
-const c = cloud({ width: 40, sun: sunLight.position }); c.position.set(x, 40, -90); scene.add(c);
-// clouds high and far; `sun` = the DirectionalLight, so their lit side matches
-const r = rock({ size: 0.8 }); r.position.set(x, groundY, z); scene.add(r);
-// in the loop: sway(scene, clock.getElapsedTime());
+import { arbol, nube, roca, mecer } from './vegetacion.js';
+const a = arbol({ tipo: 'roble', altura: 6 });   // 'roble' | 'abedul' | 'pino', altura 4-9
+a.position.set(x, 0, z); scene.add(a);
+const n = nube({ ancho: 40, sol: sol.position }); n.position.set(x, 40, -90); scene.add(n);
+// nubes altas y lejos; `sol` = la DirectionalLight, para que su lado iluminado cuadre
+const r = roca({ tam: 0.8 }); r.position.set(x, sueloY, z); scene.add(r);
+// en el bucle: mecer(scene, reloj.getElapsedTime());
 ```
-- Every tree is random: create one per position, don't clone a single one.
-- 10-25 trees and 3-6 clouds run smoothly. Bushes = `tree` with `height` 1-1.5 sunk half a
-  metre into the ground.
-- When done, `python3 ~/.gemini/config/skills/3d/inline.py index.html`: it puts the module
-  inside the page so it opens on double click (file:// doesn't load modules from another
-  file); then delete the `vegetation.js` copy from the folder.
+- Cada árbol es aleatorio: crea uno por posición, no clones uno solo.
+- 10-25 árboles y 3-6 nubes van fluidos. Arbustos = `arbol` con `altura` 1-1,5
+  hundido medio metro en el suelo.
+- Al acabar, `python3 ~/.gemini/config/skills/3d/incrusta.py index.html`: mete el módulo
+  dentro de la página para que abra con doble clic (file:// no carga módulos de otro
+  fichero) y borra la copia `vegetacion.js` de la carpeta.
 
-## The rest of the scene is still yours
-The module only provides trees, clouds and rocks. Grass, flowers, water, paths, the sky and
-warm light get the same care you would give them without it: with the skill the scene must
-not come out poorer than without it.
+## El resto de la escena sigue siendo tuyo
+El módulo solo pone árboles, nubes y rocas. Hierba, flores, agua, caminos, el cielo y la
+luz cálida van con el mismo mimo que pondrías sin él: con la skill la escena no puede salir
+más pobre que sin ella.
 
-## Light that makes it work
-`HemisphereLight` (bluish sky, dark green ground) + a warm `DirectionalLight` with
-`castShadow` and `shadow.mapSize` 2048, `renderer.toneMapping = ACESFilmicToneMapping`,
-`Fog` in the horizon color. Clouds ignore tone mapping so they stay white.
+## Luz que lo hace funcionar
+`HemisphereLight` (cielo azulado, suelo verde oscuro) + `DirectionalLight` cálido con
+`castShadow` y `shadow.mapSize` 2048, `renderer.toneMapping = ACESFilmicToneMapping`,
+`Fog` del color del horizonte. Las nubes ignoran el tone mapping para seguir blancas.
 
-## Check (done = far and close screenshots looked at)
-`agy-ver abrir` + `agy-ver foto`, and another with the camera 3-4 m from a crown. Far:
-irregular silhouettes with gaps of sky, no smooth balls or facets. Close: separate leaves,
-no half-black crown. Clouds: solid, vapor edges, grey base and white top, no holes. Rocks:
-no cracks.
+## Comprobar (hecho = foto de lejos y de cerca mirada)
+`agy-ver abrir` + `agy-ver foto`, y otra con la cámara a 3-4 m de una copa. Lejos:
+siluetas irregulares con huecos de cielo, nada de bolas lisas ni facetas. Cerca: hojas
+sueltas, sin media copa negra. Nubes: macizas, bordes de vapor, base gris y cima blanca, sin agujeros. Rocas: sin grietas.

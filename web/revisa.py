@@ -1,25 +1,20 @@
 #!/usr/bin/env python3
-"""AI-tell linter for html files. Usage: revisa.py index.html  |  revisa.py p?.html
-What the skill bans still gets written if nobody checks it: this checks it.
-Exits with 1 when it warns, so chain it with ';' and not '&&' if you look afterwards."""
+"""Revisor de delatores de IA en un html. Uso: revisa.py index.html  |  revisa.py p?.html
+Lo que la skill prohibe se escribe igual si nadie lo comprueba: esto lo comprueba.
+Sale con 1 si hay avisos, asi que encadenalo con ';' y no con '&&' si luego vas a mirar."""
 import os, re, sys
 
 FRASES = ["sin prisa", "con calma", "honest", "artesan", "de la finca a la taza", "te mereces",
           "experiencia única", "experiencia unica", "pasión por", "pasion por", "descubre",
           "implacable", "a otro nivel", "sin rodeos", "de confianza", "calidad premium",
-          "hecho con amor", "tu mejor aliado", "soluciones integrales", "cercanía",
-          # English
-          "unhurried", "artisan", "farm to cup", "you deserve", "unique experience",
-          "passion for", "discover", "elevate", "relentless", "no-nonsense", "next level",
-          "seamless", "unlock", "world-class", "cutting-edge", "crafted with love"]
+          "hecho con amor", "tu mejor aliado", "soluciones integrales", "cercanía"]
 FUENTES = ["Inter", "DM Sans", "Plus Jakarta Sans", "Poppins", "Montserrat", "Fraunces",
            "Playfair Display", "Newsreader", "Cormorant"]
 SERIFAS = ("instrument serif", "fraunces", "playfair", "newsreader", "cormorant", "garamond",
            "dm serif", "libre caslon", "lora", "gloock", "young serif", "erode", "zodiak",
            "gambetta", "sentient", "boska")
 VIVO = [r"abiert[oa] (hoy|ahora)", r"en proceso", r"turnos? libres?", r"plazas? libres?",
-        r"estado:", r"\d+\.\d{3,}°", r"en directo", r"\blive\b",
-        r"open (now|today)", r"in progress", r"slots? (left|available)", r"status:"]
+        r"estado:", r"\d+\.\d{3,}°", r"en directo", r"\blive\b"]
 VERDES = r"#(22c55e|10b981|4ade80|16a34a|34d399|00c853)|\bgreen\b|limegreen"
 EMOJI = re.compile("[\U0001F300-\U0001FAFF☀-➿⭐✨]")
 MONO = ("mono", "code", "courier")
@@ -33,7 +28,7 @@ def hex_rgb(h):
 
 
 def color_vivo(c):
-    """True if a CSS color has a hue (not black, white or grey)."""
+    """True si un color CSS tiene tono (no es negro, blanco ni gris)."""
     c = c.strip().lower()
     m = re.match(r"rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)(?:\s*,\s*([\d.]+))?", c)
     if m:
@@ -48,11 +43,11 @@ def color_vivo(c):
 
 
 def pistas_muy_ia(h, bajo, texto):
-    """What users call 'so AI': split hero, colored word, row of stats, glows."""
+    """Lo que el usuario llama 'muy IA': hero partido, palabra en color, fila de cifras, brillos."""
     mal = []
     css = " ".join(re.findall(r"<style[^>]*>(.*?)</style>", bajo, flags=re.S))
     css = re.sub(r"/\*.*?\*/", " ", css, flags=re.S)
-    # 1. Headline keyword in another color / colored italics / gradient.
+    # 1. Palabra clave del titular en otro color / cursiva de color / degradado.
     for h1_attrs, h1 in re.findall(r"<h1\b([^>]*)>(.*?)</h1>", bajo, flags=re.S)[:1]:
         h1_clases = re.findall(r'class="([^"]+)"', h1_attrs)
         h1_clases = h1_clases[0].split() if h1_clases else []
@@ -72,21 +67,21 @@ def pistas_muy_ia(h, bajo, texto):
             if re.search(sel + r"\s+" + tag + r"\b[^{]*\{[^}]*((?<!background-)(?<!-)color\s*:|gradient|text-fill)", css):
                 coloreado = True
             if coloreado:
-                mal.append("headline word in another color/colored italics: the H1 uses a single ink")
+                mal.append("palabra del titular en otro color/cursiva de color: el H1 va en una sola tinta")
                 break
-    # 2. Horizontal row of stats (10x · 65 % · 24/7).
+    # 2. Fila horizontal de cifras (10x · 65 % · 24/7).
     cifras = [m.start() for m in re.finditer(
         r">\s*[<]?\s*(\d[\d.,]*\s*(%|x|×|\+|k\+?|m\+?|/7)|24/7)\s*<", bajo)]
     for i in range(len(cifras) - 2):
         if cifras[i + 2] - cifras[i] < 1500:
-            mal.append("row of stats (3 or more in a row): put them one by one in cards, or drop them")
+            mal.append("fila de cifras (3 o mas seguidas): metelas de una en una en tarjetas, o fuera")
             break
-    # 2b. Ticker or carousel of stats: same tell, moving.
+    # 2b. Cinta o carrusel de cifras (lo vio en un prototipo y tampoco lo quiere).
     for bloque in re.findall(r"<(?:div|section|ul)[^>]*class=\"[^\"]*(?:marquee|marquesina|cinta|ticker)[^\"]*\"[^>]*>(.*?)</(?:div|section|ul)>", bajo, flags=re.S):
         if len(re.findall(r"\d", re.sub(r"<[^>]+>", " ", bloque))) >= 4:
-            mal.append("ticker or carousel with numbers: drop it; if there is a ticker, it carries names, not stats")
+            mal.append("cinta o carrusel con cifras: fuera; si hay cinta, que lleve nombres, no datos")
             break
-    # 3. Glows: offsetless colored shadows, colored text-shadow, blurred blobs.
+    # 3. Brillos: sombras de color sin desplazamiento, text-shadow de color, blobs difuminados.
     brillo = False
     for regla in re.findall(r"(?:box|text)-shadow\s*:([^;}]+)", bajo):
         for capa in regla.split("),"):
@@ -97,12 +92,12 @@ def pistas_muy_ia(h, bajo, texto):
             if col and color_vivo(col.group(1)) and len(px) >= 3 and abs(px[0]) < 2 and abs(px[1]) < 2 and px[2] >= 12:
                 brillo = True
     if brillo:
-        mal.append("colored glow (shadow with no offset): remove it, the light comes from the image")
+        mal.append("brillo de color (sombra sin desplazamiento): quitalo, la luz la pone la imagen")
     if any(float(n) >= 40 for n in re.findall(r"(?<!backdrop-)filter\s*:\s*blur\(\s*([\d.]+)px", bajo)):
-        mal.append("blurred blob (large filter: blur): drop it, the background stays flat")
-    # 4. Split hero: the hero rule lays out two columns.
+        mal.append("blob difuminado (filter: blur grande): fuera, el fondo va plano")
+    # 4. Hero partido: la regla del hero reparte en dos columnas.
     for sel, cuerpo in re.findall(r"([^{}]*hero[^{}]*)\{([^}]*)\}", css):
-        # Only the hero container; a grid of cards or widgets inside is not a split hero.
+        # Solo el contenedor del hero; una rejilla de tarjetas o widgets dentro no es un hero partido.
         if re.search(r"card|widget|stat|row|chip|list|metric|tab|item|badge|pill|grid-item|nav", sel):
             continue
         m = re.search(r"grid-template-columns\s*:\s*([^;]+)", cuerpo)
@@ -111,44 +106,44 @@ def pistas_muy_ia(h, bajo, texto):
         cols = m.group(1).strip()
         n = 2 if re.match(r"repeat\(\s*2\s*,", cols) else len(re.findall(r"[\w.%()-]+(?:\([^)]*\))?", re.sub(r"\[[^\]]*\]", "", cols)))
         if n == 2:
-            mal.append("hero in two columns (%s): if it is text|image, it is the split hero" % sel.strip()[:40])
+            mal.append("hero en dos columnas (%s): si es texto|imagen, es el hero partido que no quiere" % sel.strip()[:40])
             break
-    # 4b. The same trick inside a bento: the hero card spans 5-9 of 12 columns and the
-    # photo sits next to it. Visually it is half text, half image again.
+    # 4b. El mismo truco dentro de un bento: la tarjeta del hero ocupa 5-9 de 12 columnas y
+    # al lado va la foto. A la vista es otra vez mitad texto, mitad imagen.
     for sel, cuerpo in re.findall(r"([^{}]*hero[^{}]*)\{([^}]*)\}", css):
         m = re.search(r"grid-column\s*:\s*span\s+(\d+)", cuerpo)
         if m and 5 <= int(m.group(1)) <= 9 and not re.search(r"@media|max-width", sel):
-            mal.append("the hero card (%s) spans %s of 12 columns: with a photo next to it that is the "
-                       "split hero; make it full width" % (sel.strip()[:40], m.group(1)))
+            mal.append("la tarjeta del hero (%s) ocupa %s de 12 columnas: con una foto al lado es el "
+                       "hero partido; hazla de ancho completo" % (sel.strip()[:40], m.group(1)))
             break
     return mal
 
 
 def anatomia(bajo):
-    """The default anatomy (the skill's default anatomy): photo AS BACKGROUND in the hero and a photo on every card."""
+    """La anatomia por defecto (skill, «Lo que le gusta»): foto DE FONDO en el hero y foto en cada card."""
     mal = []
     cuerpo = re.sub(r"<(script|style)[^>]*>.*?</\1>", " ", bajo, flags=re.S)
     css = " ".join(re.findall(r"<style[^>]*>(.*?)</style>", bajo, flags=re.S))
-    # 1. Hero: if the page's first image comes after the H1 and nothing sets it as background,
-    # the hero is a block of text on a flat background with the photo below.
+    # 1. Hero: si la primera imagen de la pagina va despues del H1 y nada la pone de fondo,
+    # el hero es un bloque de texto sobre fondo liso con la foto debajo.
     i_h1 = cuerpo.find("<h1")
     if i_h1 >= 0:
         imgs = [x for x in (cuerpo.find("<img"), cuerpo.find("<video"), cuerpo.find("url(")) if x >= 0]
         fondo_css = re.search(r"[^{}]*(hero|bg|fondo|backdrop|cover|stage)[^{}]*\{[^}]*background(-image)?\s*:[^;]*url\(", css)
         if not fondo_css and (not imgs or min(imgs) > i_h1):
-            mal.append("hero without a background photo: the headline sits on a full-screen photo, not on a flat background with the photo below")
-    # 2. Product cards without a photo.
+            mal.append("hero sin foto de fondo: el titular va encima de una foto a pantalla completa, no sobre fondo liso con la foto debajo")
+    # 2. Cards de producto sin foto.
     bloques = re.split(r"(?=<article\b)|(?=<(?:div|li|a)\b[^>]*class=\"(?:[^\"]*\s)?(?:card|product|producto|modelo|model|item|[a-z]+-card)(?:\s[^\"]*)?\")", cuerpo)
     cards = [b for b in bloques[1:] if not re.match(r"<[^>]*(micro|widget|chip|stat|tech|visit|hero)", b)
              and re.search(r"\d[\d.,]*\s*(€|eur\b|\$)|\$\s*\d", b[:2500])]
     sin = [b for b in cards if not re.search(r"<img|<picture|url\(", b[:2500])]
     if len(cards) >= 3 and len(sin) * 2 > len(cards):
-        mal.append("%d of %d product cards without a photo: the card is photo first" % (len(sin), len(cards)))
+        mal.append("%d de %d cards de producto sin foto: la card es foto primero" % (len(sin), len(cards)))
     return mal
 
 
 def familias(bajo):
-    """Typefaces the page loads or declares, lowercased."""
+    """Tipografias que carga o declara la pagina, en minusculas."""
     fam = set()
     for f in re.findall(r"family=([a-z0-9+ ]+)", bajo):
         fam.add(f.replace("+", " ").strip())
@@ -165,8 +160,8 @@ def familias(bajo):
 
 def revisa(ruta):
     h = h0 = open(ruta, encoding="utf-8", errors="replace").read()
-    # Linked stylesheets count as if they were inline: otherwise a colored word defined
-    # in styles.css slipped through.
+    # Las hojas enlazadas cuentan como si estuvieran dentro: si no, una palabra en
+    # color definida en styles.css pasaba sin aviso.
     base = os.path.dirname(os.path.abspath(ruta))
     for href in re.findall(r'<link[^>]+href="([^"#?]+\.css)"', h, flags=re.I):
         p = os.path.join(base, href)
@@ -178,25 +173,25 @@ def revisa(ruta):
     mal = []
     for f in FRASES:
         if f in texto:
-            mal.append('stock phrase: "%s" -> write a concrete fact' % f)
+            mal.append('frase hecha: "%s" -> escribe un dato concreto' % f)
     fam = familias(bajo)
     for f in FUENTES:
         if any(x == f.lower() or x.startswith(f.lower() + " ") for x in fam):
-            mal.append("default font: %s -> use the die's" % f)
+            mal.append("fuente por defecto: %s -> usa las del dado" % f)
     for p in VIVO:
         m = re.search(p, texto)
         if m:
-            mal.append('made-up "live" data: "%s" -> a static page cannot know that' % m.group(0))
-    # Green "open" dot: in a CSS rule or an inline style.
+            mal.append('dato "en vivo" inventado: "%s" -> una web estatica no sabe eso' % m.group(0))
+    # Punto verde de "abierto": en una regla CSS o en un style en linea.
     trozos = re.findall(r"\{[^}]*\}", bajo) + re.findall(r"<[^>]+>", bajo)
     if any(re.search(VERDES, t) and re.search(r"50%|999|9999px|\bdot\b|pulse|status", t) for t in trozos):
-        mal.append("green 'open' dot: remove it")
-    # Emoji pill above the headline (2023 template).
+        mal.append("punto verde de 'abierto': quitalo")
+    # Pastilla con emoji encima del titular (plantilla 2023).
     antes_h1 = bajo.split("<h1", 1)[0]
     antes_h1 = re.sub(r"<(script|style|head)[^>]*>.*?</\1>", " ", antes_h1, flags=re.S)
     if "<h1" in bajo and EMOJI.search(re.sub(r"<[^>]+>", " ", antes_h1)):
-        mal.append("emoji above the H1 (the 2023 pill): remove it")
-    # 2026 template: cream background + serif headline.
+        mal.append("emoji encima del H1 (la pastilla de 2023): quitalo")
+    # Plantilla 2026: fondo crema + titular con serifa.
     fondos = re.findall(r"--(?:bg|fondo|background)[\w-]*:\s*(#[0-9a-f]{3,6})\b", bajo)
     fondos += re.findall(r"body\s*\{[^}]*background(?:-color)?:\s*(#[0-9a-f]{3,6})\b", bajo)
     fondos += re.findall(r"<body[^>]*background(?:-color)?:\s*(#[0-9a-f]{3,6})\b", bajo)
@@ -209,21 +204,21 @@ def revisa(ruta):
         if r >= 235 and r - b >= 10 and g > b:
             crema = True
     if crema and any(s in f for f in fam for s in SERIFAS):
-        mal.append("cream background + serif: that is the 2026 template -> change one of them")
+        mal.append("fondo crema + serifa: es la plantilla 2026 -> cambia uno de los dos")
     cejas = len(re.findall(r"text-transform:\s*uppercase[^}]*letter-spacing|letter-spacing[^}]*text-transform:\s*uppercase", bajo))
     if cejas > 3:
-        mal.append("%d spaced UPPERCASE styles: keep one at most" % cejas)
+        mal.append("%d estilos en MAYUSCULAS espaciadas: deja uno como mucho" % cejas)
     imgs = re.findall(r"<img\b[^>]*>", bajo)
     for tag in imgs:
         if 'alt="' not in tag or "width" not in tag:
-            mal.append("img without alt or width/height: " + tag[:60])
+            mal.append("img sin alt o sin width/height: " + tag[:60])
             break
     fotos = imgs or re.search(r"url\(\s*['\"]?[^)'\"]+\.(jpe?g|png|webp|avif)", bajo)
-    # With several versions (prototypes) some may be type and SVG only: there the photo is
-    # required of the set, in main, not of each one.
+    # Con varias versiones (prototypes) algunas van solo con tipografia y SVG: alli se
+    # exige la foto al conjunto, en main, no a cada una.
     if not fotos and not VARIAS and not re.search(r"<canvas|<video|three\.", bajo):
-        mal.append("not a single image: for a landing or portfolio the hero one is missing (generate it with invoke_subagent)")
-    # Dark overlay eating the photo: a nearly opaque gradient over an image.
+        mal.append("ni una imagen: si es landing o portfolio, falta la del hero (genérala con invoke_subagent)")
+    # Velo oscuro que se come la foto: gradiente casi opaco sobre una imagen.
     if fotos:
         peor = 0.0
         for grad in re.findall(r"linear-gradient\(([^;]*)", bajo):
@@ -231,31 +226,34 @@ def revisa(ruta):
                 if int(r) + int(g) + int(b) < 200:
                     peor = max(peor, float(a))
         if peor >= 0.75:
-            mal.append("dark overlay at %d%% over the photo: the image leads, keep it at 50%% or less" % (peor * 100))
-    # Uncompressed local images.
+            mal.append("velo oscuro al %d%% sobre la foto: la imagen manda, dejalo en 50%% o menos" % (peor * 100))
+    # Imagenes locales sin comprimir.
     base = os.path.dirname(os.path.abspath(ruta))
     for src in sorted(set(re.findall(r"""(?:src=|url\()\s*['"]?([^'")\s>]+\.(?:jpe?g|png|webp))""", h, flags=re.I))):
         f = os.path.join(base, src)
         if not src.startswith(("http", "data:")) and os.path.isfile(f) and os.path.getsize(f) > 350_000:
-            mal.append("%s weighs %d KB: compress it (foto.py in this skill)" % (src, os.path.getsize(f) // 1000))
-    # Real-looking phone numbers (Spanish format): if the user did not give them, they are made up.
+            mal.append("%s pesa %d KB: comprimela (foto.py de la skill web)" % (src, os.path.getsize(f) // 1000))
+    # Telefonos con pinta de reales: si no los dio el usuario, son inventados.
     for tel in re.findall(r"(?<![\d.,])(?:\+34\s?)?[6789]\d{2}(?:[\s.]?\d{2,3}){3}(?![\d.,])", texto):
         if not re.fullmatch(r"(?:\+34\s?)?[6789](?:[\s.]?0)+", tel.strip()):
-            mal.append("phone %s: if the user did not give it, use 000 000 000 and flag it in the report" % tel.strip())
+            mal.append("telefono %s: si el usuario no lo dio, pon 000 000 000 y avisalo en el informe" % tel.strip())
             break
-    # Data a static site cannot know, and real-looking addresses.
+    # Datos que una web estática no puede saber, y direcciones con pinta de reales.
     if re.search(r"\d{1,3}\s*°\s*\d{1,2}\s*[′']\s*\d{0,2}", texto):
-        mal.append("GPS coordinates: remove them, they are set dressing")
-    dire = re.search(r"\b(calle|c/|rúa|rua|avenida|avda\.?|plaza|praza|paseo)\s+(de\s+|da\s+|do\s+|del\s+|la\s+|a\s+|o\s+)*[a-záéíóúñ]+[a-záéíóúñ ]{0,25},?\s+(n[ºo°]\s*)?\d{1,3}\b|\b\d{1,4}\s+[a-z]+(\s+[a-z]+)?\s+(street|st\.|avenue|ave\.|road|rd\.|lane|square)\b", texto)
-    if dire and "street, no" not in texto and "calle, n" not in texto:
-        mal.append('address "%s": if the user did not give it, use "Street, No." and flag it under Missing data' % dire.group(0).strip())
+        mal.append("coordenadas GPS: fuera, son decorado")
+    vivo = re.search(r"\b(abierto ahora|abierto hoy|cerrado ahora|en vivo|en directo|live|pechad[ao] agora|aberto agora)\b", texto)
+    if vivo:
+        mal.append('dato "en vivo" inventado ("%s"): una web estática no lo sabe' % vivo.group(1))
+    dire = re.search(r"\b(calle|c/|rúa|rua|avenida|avda\.?|plaza|praza|paseo)\s+(de\s+|da\s+|do\s+|del\s+|la\s+|a\s+|o\s+)*[a-záéíóúñ]+[a-záéíóúñ ]{0,25},?\s+(n[ºo°]\s*)?\d{1,3}\b", texto)
+    if dire and "calle, n" not in texto:
+        mal.append('dirección "%s": si no te la dio, pon "Calle, nº" y avísalo en Datos que faltan' % dire.group(0).strip())
     mal += pistas_muy_ia(h, bajo, texto)
-    if not VARIAS and PORTADA(ruta):  # prototypes has its own anatomy per version
+    if not VARIAS and PORTADA(ruta):  # prototypes tiene su propia anatomia por ficha
         mal += anatomia(bajo)
-    # Huge CSS or JS inside the html: in a site it goes in shared css/ and js/.
+    # CSS o JS gigante metido en el html: en un sitio va en css/ y js/ compartidos.
     dentro = sum(len(x) for x in re.findall(r"<(?:style|script)(?![^>]*\bsrc=)[^>]*>(.*?)</(?:style|script)>", h0, flags=re.S))
     if not VARIAS and dentro > 12000:
-        mal.append("%d KB of CSS/JS inside the html: move it to css/styles.css and js/main.js" % (dentro // 1000))
+        mal.append("%d KB de CSS/JS dentro del html: sacalo a css/styles.css y js/main.js" % (dentro // 1000))
     return mal, fam, bool(fotos)
 
 
@@ -271,38 +269,38 @@ def main(rutas):
             titulares.setdefault(t, []).append(os.path.basename(ruta))
             if len(t.split()) > 12:
                 total += 1
-                print("· %s: the H1 has %d words; 12 at most (the rest goes to the subtitle)" %
+                print("· %s: el H1 tiene %d palabras; 12 como mucho (el resto va al subtitulo)" %
                       (os.path.basename(ruta), len(t.split())))
         mal, fam, foto = revisa(ruta)
         con_foto += foto
         total += len(mal)
         if len(rutas) > 1:
             print("== " + ruta)
-        print("\n".join("· " + m for m in mal) if mal else "Linter: clean.")
+        print("\n".join("· " + m for m in mal) if mal else "Revisor: limpio.")
         for f in fam:
             if not any(m in f for m in MONO):
                 usos.setdefault(f, []).append(os.path.basename(ruta))
-    # Several versions of a page: they must not converge on the same typeface.
+    # Varias versiones de una pagina: que no converjan en la misma letra.
     if VARIAS and not con_foto:
         total += 1
-        print("· no version has a photo: generate 1-2 with invoke_subagent and use them")
+        print("· ninguna version lleva foto: genera 1-2 con invoke_subagent y usalas en alguna")
     for t, donde in (titulares.items() if VARIAS else []):
         if len(donde) >= 2:
             total += 1
-            print('· same headline in %s ("%s"): each version writes its own in its VOICE' %
+            print('· mismo titular en %s ("%s"): cada version escribe el suyo con su VOZ' %
                   (" ".join(donde), t[:60]))
     if VARIAS and len(rutas) >= 3:
         for f, donde in sorted(usos.items()):
             if len(donde) >= 3:
                 total += 1
-                print("· %s appears in %d of %d (%s): each version with its own typeface" %
+                print("· %s sale en %d de %d (%s): cada version con su tipografia" %
                       (f, len(donde), len(rutas), " ".join(donde)))
     sys.exit(1 if total else 0)
 
 
 RUTAS = sys.argv[1:] or ["index.html"]
-# Several VERSIONS of one page (prototypes: p1.html … p6.html) versus several PAGES of
-# one site (index, catalog, product…), which should share their typefaces.
+# Varias VERSIONES de una pagina (prototypes: p1.html … p6.html) frente a varias PAGINAS de
+# un mismo sitio (index, catalogo, ficha…), que si deben compartir tipografia.
 VARIAS = len(RUTAS) > 1 and all(re.fullmatch(r"p\d+\.html", os.path.basename(r)) for r in RUTAS)
 PORTADA = lambda r: len(RUTAS) == 1 or os.path.basename(r) == "index.html"
 main(RUTAS)
