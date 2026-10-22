@@ -30,6 +30,10 @@ what's left here.
 | [`3d`](3d/SKILL.md) | **Trees and clouds that aren't balloons.** Argon builds crowns from flat-shaded icosahedra, clouds from stuck-together spheres and rocks that crack open. `vegetation.js` gives real leaf-card crowns with volume normals, sun-shaded vapor clouds and crack-free rocks with fracture faces; `inline.py` embeds it so the page still opens on double click. |
 | [`blender`](blender/SKILL.md) | The Blender MCP traps that crash a low-VRAM laptop: how to start it, asset resolution, a render setup that doesn't run out of GPU memory. |
 | [`caelestia`](caelestia/SKILL.md) | **Interfaces that look like the [Caelestia](https://github.com/caelestia-dots/shell) desktop.** `tokens.py` prints the shell's real tokens (role colours from the live wallpaper scheme, the 4·8·12·16·28·pill scale, M3 durations and curves, glass) as CSS or QML, with a neutral fallback. The rules come from five interfaces built in that style (a game HUD, a Spotify theme, an SDDM login, a boot animation, an mpv skin): one accent, concentric radii, inset-only glow, motion that transforms instead of cutting. |
+| [`clase`](clase/SKILL.md) | **University workspace and task tracker.** Guidelines for `~/CLASE/` subjects, task tracking (`TAREAS.md`), course DAGs and campus/outlook/teams MCP integration. |
+| [`escritorio`](escritorio/SKILL.md) | **Hyprland 0.56 (Lua config) and Caelestia shell.** Safe configuration patterns for `hypr-user.lua`, keybinds, window rules, and Quickshell overlays. |
+| [`prototypes`](prototypes/SKILL.md) | **Six visual prototypes from one brief.** Generates 6 distinct design directions for a page or app to compare side-by-side using `comparar.py`. |
+| [`writing-for-agents`](writing-for-agents/SKILL.md) | **Writing docs for AI agents.** Context pointers, budget allocation, and crisp instructions for skills, rules files, and `AGENTS.md`. |
 
 ![Same brief, factory Argon vs Argon with the 3d skill](docs/3d-before-after.jpg)
 
@@ -46,10 +50,15 @@ the six-prototype skill lives in [ai-prototypes](https://github.com/iaguito22/ai
 
 ```bash
 git clone https://github.com/iaguito22/antigravity-skills.git /tmp/antigravity-skills
-cp -r /tmp/antigravity-skills/{web,3d,blender,caelestia} ~/.gemini/config/skills/
+cp -r /tmp/antigravity-skills/{3d,blender,caelestia,clase,escritorio,prototypes,web,writing-for-agents} ~/.gemini/config/skills/
+cp /tmp/antigravity-skills/GEMINI.md ~/.gemini/config/
 rm -rf /tmp/antigravity-skills
 ```
 
 Python for the scripts; Pillow for `foto.py`. Applies on the next `agy` session.
+
+## Rules & Persona (`GEMINI.md`)
+
+The included [`GEMINI.md`](GEMINI.md) configures global agent behavior: terminal-tailored visual output, strict search discipline (`rg`), pair-programming pacing, and end-of-task verdict reports.
 
 The history of how these were measured is in [`DEVLOG.md`](DEVLOG.md).
